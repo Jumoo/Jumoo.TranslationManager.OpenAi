@@ -1,0 +1,79 @@
+﻿<div>
+    <umb-box class="tm-provider-options">
+        <umb-box-header title-key="openAi_name"></umb-box-header>
+        <umb-box-content>
+            <div class="translate-toggle-box flex justify-between">
+                <div class="toggle-label">
+                    <div class="toggle-name">
+                        <localize key="openAi_model"></localize>
+                    </div>
+                </div>
+                <div>
+                    {{vm.settings.model}}
+                </div>
+            </div>
+
+            <div class="translate-toggle-box flex justify-between">
+                <div class="toggle-label">
+                    <div class="toggle-name">
+                        <localize key="openAi_maxTokens"></localize>
+                    </div>
+                </div>
+                <div>
+                    {{vm.settings.maxTokens}}
+                </div>
+            </div>
+
+
+            <div class="translate-toggle-box flex justify-between">
+                <div class="toggle-label">
+                    <div class="toggle-name">
+                        <localize key="openAi_temparature"></localize>
+                    </div>
+                </div>
+                <div>
+                    {{vm.settings.temperature}}
+                </div>
+            </div>
+
+            <div class="translate-toggle-box flex justify-between">
+                <div class="toggle-label">
+                    <div class="toggle-name">
+                        <localize key="openAi_frequencyPenalty"></localize>
+                    </div>
+                </div>
+                <div>
+                    {{vm.settings.frequencyPenalty}}
+                </div>
+            </div>
+
+            <div class="translate-toggle-box flex justify-between">
+                <div class="toggle-label">
+                    <div class="toggle-name">
+                        <localize key="openAi_presencePenalty"></localize>
+                    </div>
+                </div>
+                <div>
+                    {{vm.settings.presencePenalty}}
+                </div>
+            </div>
+
+            <div class="translate-toggle-box flex justify-between">
+                <div class="toggle-label">
+                    <div class="toggle-name">
+                        <localize key="openAi_nucleusSamplingFactor"></localize>
+                    </div>
+                </div>
+                <div>
+                    {{vm.settings.nucleusSamplingFactor}}
+                </div>
+            </div>
+
+        </umb-box-content>
+    </umb-box>
+
+    <div class="alert alert-warning">
+        <localize key="@openAi_beta-warning"></localize>
+    </div>
+
+</div>

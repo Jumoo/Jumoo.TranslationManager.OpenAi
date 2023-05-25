@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language alias="en" intName="English (UK)" localName="English (UK)" lcid="" culture="en-GB">
+	<creator>
+		<name>Jumoo</name>
+		<link>http://jumoo.uk</link>
+	</creator>
+	<area alias="openAi">
+		<key alias="name">OpenAi Connector</key>
+		
+		<key alias="beta-warning"><![CDATA[
+			The openAi Translation connector is currently in beta, please test before sending lots of text. You may incurr API costs while testing the connector.
+		]]></key>
+		
+		<key alias="config-title">OpenAi Config</key>
+		<key alias="config-desc">In order to use the OpenAi Translation API, you will need to supply an API Key - this key is then used to translate using your OpenAi account.</key>
+
+		<key alias="key">Api Key</key>
+		<key alias="key-desc">OpenAi Translation API Key</key>
+
+		<key alias="model">Model</key>
+		<key alias="model-desc">OpenAi Model to use to translation</key>
+		<key alias="model-help"><![CDATA[
+			<p><a href="https://platform.openai.com/docs/models" target="_blank">More info.</a></p>
+		]]></key>
+
+		<key alias="throttle">Throttle</key>
+		<key alias="throttle-desc">Number of milliseconds to wait between calls (To Avoid API Throttling)</key>
+
+		<key alias="split">Split Html</key>
+		<key alias="split-desc">Split any HTML before sending to translation</key>
+
+		<key alias="asHtml">Send as Html</key>
+		<key alias="asHtml-desc">Make sure html elments are marked as html when sent to translation</key>
+
+		<key alias="help-text">
+			<![CDATA[
+				<p>The OpenAi connector allows you to use OpenAi for text translation</p>
+				<p>You will require an account on OpenAi, and an OpenAi Api key before you can use this service<p>
+				<p>The connector will send the following prompt to the api:</p>
+<pre>
+Translate this {sourceLang} text into {targetLang}
+
+{text}
+</pre>
+				<p>
+				The exact number of tokens, and usage will be determained be the OpenApi settings
+				you are using to perform the translation.
+				</p>
+		]]></key>
+
+
+		<key alias="config-advanced">Advanced Open Ai Settings</key>
+		<key alias="config-advanced-desc">Control the fine detail of the Ai request</key>
+		<key alias="config-advanced-help">
+			<![CDATA[
+				<p>Tweak the options being sent to the OpenAi request.</p>
+				<p>These values are the internal OpenAi Compleation Options. see the 
+				<a href="https://platform.openai.com/docs/introduction" target="_blank">OpenAi documentation</a> for more information.
+			]]>
+		</key>
+
+		<key alias="maxTokens">Max Tokens</key>
+		<key alias="maxTokens-desc">The maximum number of tokens to generate in the completion.</key>
+
+		<key alias="temparature">Temperature</key>
+		<key alias="temparature-desc">Sampling temperature</key>
+
+		<key alias="frequencyPenalty">Frequency Penalty</key>
+		<key alias="frequencyPenalty-desc">sitive values penalize new tokens based on their existing frequency in the text so far</key>
+
+		<key alias="presencePenalty">Presence Penalty</key>
+		<key alias="presencePenalty-desc">Positive values penalize new tokens based on whether they appear in the text so far</key>
+
+		<key alias="nucleusSamplingFactor">Nucleus sampling</key>
+		<key alias="nucleusSamplingFactor-desc">.</key>
+
+	</area>
+</language>

@@ -1,0 +1,114 @@
+﻿<div ng-controller="translate.openAiConfigController as pvm">
+
+    <div class="alert alert-warning" style="margin:-20px; margin-bottom:20px;">
+        <localize key="@openAi_beta-warning"></localize>
+    </div>
+
+    <div class="tm-umb-layout">
+        <div class="tm-umb-box tm-umb-box-twothird">
+            <umb-box>
+                <umb-box-header title-key="openAi_config-title"
+                                description-key="openAi_config-desc">
+                </umb-box-header>
+                <umb-box-content>
+                    <div class="form-horizontal">
+                        <umb-control-group label="@openAi_key" description="@openAi_key-desc">
+                            <input type="text" ng-model="vm.settings.key" class="umb-property-editor umb-textstring textstring" />
+                        </umb-control-group>
+
+
+                        <umb-control-group label="@openAi_throttle" description="@openAi_throttle-desc">
+                            <input type="number" ng-model="vm.settings.throttle" class="umb-property-editor umb-textstring textstring"
+                                   placeholder="500" />
+                        </umb-control-group>
+
+                        <!-- split or not -->
+                        <umb-control-group label="@openAi_split" description="@openAi_split-desc">
+                            <umb-toggle checked="vm.settings.split == true"
+                                        on-click="vm.settings.split = !vm.settings.split"
+                                        show-labels="true"
+                                        label-on="Split HTML into blocks before translating"
+                                        label-off="translate HTML as a single block"
+                                        label-position="right">
+                            </umb-toggle>
+                        </umb-control-group>
+
+                        <umb-control-group label="@openAi_asHtml" description="@openAi_asHtml-desc">
+                            <umb-toggle checked="vm.settings.asHtml"
+                                        on-click="vm.settings.asHtml = !vm.settings.asHtml"
+                                        show-labels="true"
+                                        label-on="Tell API to treat richtext markup as html"
+                                        label-off="All text (even html) is sent as plain text"
+                                        label-position="right">
+                            </umb-toggle>
+                        </umb-control-group>
+
+                    </div>
+                </umb-box-content>
+            </umb-box>
+
+            <umb-box>
+                <umb-box-header title-key="openAi_config-advanced"
+                                description-key="openAi_config-advanced-desc"
+                                style="cursor:pointer;"
+                                ng-click="pvm.showAdvanced = !pvm.showAdvanced"></umb-box-header>
+                <umb-box-content ng-show="pvm.showAdvanced">
+
+                    <div>
+                        <small>
+                            <em class="text-muted">
+                                <localize key="openAi_config-advanced-help"></localize>
+                            </em>
+                        </small>
+                    </div>
+
+                    <umb-control-group label="@openAi_model" description="@openAi_model-desc">
+                        <input type="text" ng-model="vm.settings.model" class="umb-property-editor umb-textstring textstring"
+                               placeholder="text-davinci-003" />
+                        <div class="mt2">
+                            <localize key="openAi_model-help"></localize>
+                        </div>
+                    </umb-control-group>
+
+                    <umb-control-group label="@openAi_maxTokens" description="@openAi_maxTokens-desc">
+                        <input type="number" ng-model="vm.settings.maxTokens" class="umb-property-editor umb-textstring textstring"
+                               placeholder="500" />
+                    </umb-control-group>
+
+                    <umb-control-group label="@openAi_temparature" description="@openAi_temparature-desc">
+                        <input type="number" ng-model="vm.settings.temperature" step="0.1" class="umb-property-editor umb-textstring textstring"
+                               placeholder="0.0" />
+                    </umb-control-group>
+
+                    <umb-control-group label="@openAi_frequencyPenalty" description="@openAi_frequencyPenalty-desc">
+                        <input type="number" ng-model="vm.settings.frequencyPenalty" step="0.1" class="umb-property-editor umb-textstring textstring"
+                               placeholder="0.0" />
+                    </umb-control-group>
+
+                    <umb-control-group label="@openAi_presencePenalty" description="@openAi_presencePenalty-desc">
+                        <input type="number" ng-model="vm.settings.presencePenalty" step="0.1" class="umb-property-editor umb-textstring textstring"
+                               placeholder="0.0" />
+                    </umb-control-group>
+
+                    <umb-control-group label="@openAi_nucleusSamplingFactor" description="@openAi_nucleusSamplingFactor-desc">
+                        <input type="number" ng-model="vm.settings.nucleusSamplingFactor" class="umb-property-editor umb-textstring textstring"
+                               placeholder="1" />
+                    </umb-control-group>
+                </umb-box-content>
+            </umb-box>
+        </div>
+
+        <div class="tm-umb-box tm-umb-box-third">
+            <umb-box>
+                <umb-box-header title="OpenAi Api Connector"
+                                description="Machine translation"></umb-box-header>
+                <umb-box-content>
+                    <localize key="openAi_help-text"></localize>
+                </umb-box-content>
+            </umb-box>
+
+            <!-- <pre>{{vm.settings | json}}</pre> -->
+
+        </div>
+    </div>
+</div>
