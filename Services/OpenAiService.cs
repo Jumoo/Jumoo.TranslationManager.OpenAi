@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 using Azure.AI.OpenAI;
 
-using HtmlAgilityPack;
-
 using Jumoo.TranslationManager.OpenAi.Models;
 
 using Lucene.Net.Util;
+
+using Microsoft.Extensions.Logging;
 
 namespace Jumoo.TranslationManager.OpenAi.Services;
 
@@ -17,10 +17,12 @@ public class OpenAiService
 {
     private readonly OpenAiSettings _settings;
     private CompletionsOptions _completionOptions;
+    private ILogger<OpenAiService> _logger;
 
-    public OpenAiService()
+    public OpenAiService(ILogger<OpenAiService> logger)
     {
         _settings = new OpenAiSettings();
+        _logger = logger;
     }
 
     public void UpdateSettings(OpenAiSettings settings, CompletionsOptions options)
@@ -40,7 +42,10 @@ public class OpenAiService
 
         foreach (var item in text)
         {
-            prompts.Add($"translate this {sourceLang} {textType} into to {targetLang}\r\n\r\n{item}");
+            var promptText = $"translate this {sourceLang} {textType} into to {targetLang}\n\n{item}\n";
+            _logger.LogDebug("PROMPT: {prompt}", promptText);
+
+            prompts.Add(promptText);
         }
 
         if (prompts.Any())
