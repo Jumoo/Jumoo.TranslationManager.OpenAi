@@ -17,7 +17,19 @@
 		<Copyright>Jumoo 2023</Copyright>
 
 		<PackageTags>umbraco, umbraco-cms, translations, umbraco-marketplace</PackageTags>
+		<PackageProjectUrl>https://github.com/Jumoo/Jumoo.TranslationManager.OpenAi</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Jumoo/Jumoo.TranslationManager.OpenAi</RepositoryUrl>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="logo.png" Pack="true" PackagePath="\" />
+		<None Include="readme.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Jumoo.TranslationManager.Core" Version="10.0.0" />
@@ -35,9 +47,4 @@
 	<ItemGroup>
 		<PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.5" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Controllers\" />
-	</ItemGroup>
-
 </Project>
