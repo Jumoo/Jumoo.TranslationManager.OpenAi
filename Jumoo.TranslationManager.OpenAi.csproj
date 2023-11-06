@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
@@ -45,6 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.5" />
+		<PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.8" />
+		<PackageReference Include="Betalgo.OpenAI" Version="7.3.1" />
 	</ItemGroup>
 </Project>

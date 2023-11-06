@@ -1,4 +1,5 @@
-﻿<div ng-controller="translate.openAiConfigController as pvm">
+﻿<div ng-controller="translate.openAiConfigController as pvm"
+      class="form-horizontal">
 
     <div class="alert alert-warning" style="margin:-20px; margin-bottom:20px;">
         <localize key="@openAi_beta-warning"></localize>
@@ -11,7 +12,7 @@
                                 description-key="openAi_config-desc">
                 </umb-box-header>
                 <umb-box-content>
-                    <div class="form-horizontal">
+                    <div>
                         <umb-control-group label="@openAi_key" description="@openAi_key-desc">
                             <input type="text" ng-model="vm.settings.key" class="umb-property-editor umb-textstring textstring" />
                         </umb-control-group>
@@ -62,6 +63,14 @@
                         </small>
                     </div>
 
+                    <umb-control-group label="@openAi_service" description="@openAi_service-desc">
+
+                        <select ng-model="vm.settings.service"
+                                ng-options="service for service in pvm.services"
+                                class="umb-dropdown umb-property-editor"></select>
+
+                    </umb-control-group>
+
                     <umb-control-group label="@openAi_model" description="@openAi_model-desc">
                         <input type="text" ng-model="vm.settings.model" class="umb-property-editor umb-textstring textstring"
                                placeholder="text-davinci-003" />
@@ -96,6 +105,43 @@
                     </umb-control-group>
                 </umb-box-content>
             </umb-box>
+
+            <umb-box>
+                <umb-box-header title-key="openAi_promptTitle"
+                                description-key="openAi_promptDesc"
+                                style="cursor:pointer;"
+                                ng-click="pvm.showPrompt = !pvm.showPrompt"></umb-box-header>
+
+                <umb-box-content ng-show="pvm.showPrompt">
+                    <div class="mb2">
+                        <h4>System prompt</h4>
+                        <small>When using latest api's the system prompt is sent before the text</small>
+                    </div>
+                    <umb-control-group label="@openAi_promptLabel"
+                                       description="@openAi_promptLabelDesc">
+                        <textarea rows="5"
+                                  ng-model="vm.settings.systemPrompt" class="umb-property-editor"></textarea>
+                    </umb-control-group>
+                </umb-box-content>
+
+                <umb-box-content ng-show="pvm.showPrompt">
+                    <div class="mb2">
+                        <h4>Legacy Prompt</h4>
+                        <small>The prompt to use on 'base' or 'legacy' API calls</small>
+                    </div>
+
+                    <umb-control-group label="@openAi_promptLabel"
+                                       description="@openAi_promptLabelDesc">
+                        <textarea rows="5"
+                                  ng-model="vm.settings.prompt" class="umb-property-editor"></textarea>
+                    </umb-control-group>
+                    <umb-control-group label="Example"
+                                       description="Example of what will be sent to the OpenAI">
+                        <pre>{{pvm.samplePrompt}}</pre>
+                    </umb-control-group>
+                </umb-box-content>
+
+            </umb-box>
         </div>
 
         <div class="tm-umb-box tm-umb-box-third">
@@ -103,7 +149,9 @@
                 <umb-box-header title="OpenAi Api Connector"
                                 description="Machine translation"></umb-box-header>
                 <umb-box-content>
-                    <localize key="openAi_help-text"></localize>
+                    <localize key="openAi_help-text" 
+                              tokens="[vm.settings.prompt, vm.settings.systemPrompt]"
+                              watch-tokens="true"></localize>
                 </umb-box-content>
             </umb-box>
 

@@ -36,16 +36,18 @@
 			<![CDATA[
 				<p>The OpenAi connector allows you to use OpenAi for text translation</p>
 				<p>You will require an account on OpenAi, and an OpenAi Api key before you can use this service<p>
-				<p>The connector will send the following prompt to the api:</p>
-<pre>
-Translate this {sourceLang} text into {targetLang}
+				
+				<h5>System prompt</h5>
+				<p>For the current models (e.g GPT-4) the connector will start with	the following system prompt </p>
+				<pre>%1%</pre>
+				<p>and then send the translation text as a user request.</p>
 
-{text}
-</pre>
-				<p>
-				The exact number of tokens, and usage will be determained be the OpenApi settings
-				you are using to perform the translation.
-				</p>
+				<h5>'base' or 'legacy' prompt</h5>
+				<p>For 'base' or legacy' models the connector will send the following prompt to the api:</p>
+				<pre>%0%</pre>
+
+				<p>The exact number of tokens, and usage will be determained be the OpenApi settings
+				you are using to perform the translation.</p>
 		]]></key>
 
 
@@ -74,5 +76,13 @@ Translate this {sourceLang} text into {targetLang}
 		<key alias="nucleusSamplingFactor">Nucleus sampling</key>
 		<key alias="nucleusSamplingFactor-desc">.</key>
 
+		<key alias="promptTitle">Prompt Setttings</key>
+		<key alias="promptDesc">Control the promt sent to Open AI for translation</key>
+
+		<key alias="promptLabel">Prompt to send to openAi</key>
+		<key alias="promptLabelDesc">Accepts variables substitution : {sourceLang} {targetLang} {textType} {text}</key>
+
+		<key alias="service">OpenAi Library</key>
+		<key alias="service-desc">Choose which API Library to use when sending translations</key>
 	</area>
 </language>

@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-
-using Azure.AI.OpenAI;
 
 using HtmlAgilityPack;
 
 using Jumoo.TranslationManager.Core;
 using Jumoo.TranslationManager.Core.Configuration;
+using Jumoo.TranslationManager.Core.Hubs;
 using Jumoo.TranslationManager.Core.Models;
 using Jumoo.TranslationManager.Core.Providers;
 using Jumoo.TranslationManager.OpenAi.Models;
 using Jumoo.TranslationManager.OpenAi.Services;
 using Jumoo.TranslationManager.Utilities;
 
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 using Umbraco.Cms.Core;
+using Umbraco.Extensions;
 
 namespace Jumoo.TranslationManager.OpenAi;
+
 public class OpenAiConnector : ITranslationProvider
 {
     public static string ConnectorName = "OpenAi Connector";
@@ -32,37 +33,38 @@ public class OpenAiConnector : ITranslationProvider
 
     private readonly TranslationConfigService _configService;
     private readonly ILogger<OpenAiConnector> _logger;
-    private readonly OpenAiService _openAiService;
+    private readonly IHubContext<TranslationHub> _hubContext;
+
+    private readonly OpenAIServiceFactory _openAIServiceFactory;
+    private IOpenAiTranslationService _openAiService;
 
     public string Name => ConnectorName;
     public string Alias => ConnectorAlias;
     public Guid Key => Guid.Parse("{D60C3B07-2FCE-4568-8A1D-C3286A73DF8A}");
 
-    private OpenAiSettings _settings;
 
-    private CompletionsOptions _completionsOptions;
-
+    private string _aiServiceName = nameof(BetalgoOpenAiService);
     private int _throttle = 300;
     private bool _split = false;
     private bool _asHtml = true;
+    private string _model = OpenAIConstants.DefaultModel;
+    private string _prompt = OpenAIConstants.DefaultPrompt;
+    private string _systemPrompt = OpenAIConstants.DefaultSystemPrompt;
 
-    public OpenAiConnector(TranslationConfigService configService, ILogger<OpenAiConnector> logger, OpenAiService openAiService)
+    public OpenAiConnector(
+        TranslationConfigService configService,
+        ILogger<OpenAiConnector> logger,
+        OpenAIServiceFactory openAIServiceFactory,
+        IHubContext<TranslationHub> hubContext)
     {
-        _settings = new OpenAiSettings();
-        
-        // defaults. 
-        _completionsOptions = new CompletionsOptions
-        {
-            MaxTokens = 500,
-            Temperature = 0f,
-            FrequencyPenalty = 0.0f,
-            PresencePenalty = 0.0f,
-            NucleusSamplingFactor = 1
-        };
 
+        // defaults. 
         _configService = configService;
         _logger = logger;
-        _openAiService = openAiService;
+        _openAIServiceFactory = openAIServiceFactory;
+        _hubContext = hubContext;
+
+        Reload();
     }
 
     public TranslationProviderViews Views => new TranslationProviderViews()
@@ -73,24 +75,35 @@ public class OpenAiConnector : ITranslationProvider
 
     public async Task<Attempt<TranslationJob>> Submit(TranslationJob job)
     {
-        if (string.IsNullOrEmpty(_settings.Key))
-            throw new Exception("OpenAi Key is missing");
+        if (!_openAiService.Enabled())
+            throw new Exception("OpenAi is not configured");
 
         var sourceLang = job.SourceCulture.DisplayName;
         var targetLang = job.TargetCulture.DisplayName;
 
         _logger.LogDebug("Submitting translations via OpenApi");
 
-        foreach(var node in job.Nodes)
+        var hub = GetTranslationClientHub();
+        int count = 0;
+
+
+        foreach (var node in job.Nodes)
         {
             _logger.LogDebug("Translating: {nodeId}", node.MasterNodeId);
 
-            foreach(var group in node.Groups)
+            hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI");
+
+            foreach (var group in node.Groups)
             {
                 foreach (var property in group.Properties)
                 {
+                    count++;
+
                     _logger.LogDebug("Translation: {nodeId} {group} {property}",
                         node.MasterNodeId, group, property);
+
+                    hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI - {count}");
+
 
                     var result = await GetTranslatedValue(
                         property.Source, property.Target, sourceLang, targetLang);
@@ -331,9 +344,17 @@ public class OpenAiConnector : ITranslationProvider
                     _logger.LogDebug("Chunk {length}", b.Length);
                 }
 
-                _openAiService.UpdateSettings(_settings, _completionsOptions);
+                var translationOptions = new OpenAITranslationOptions
+                {
+                    SourceLanguage = sourceLang,
+                    TargetLanguage = targetLang,
+                    IsHtml = isHtml,
+                    Model = _model,
+                    Prompt = _prompt,
+                    SystemPrompt = _systemPrompt
+                };
 
-                var translated = await _openAiService.Translate(block, sourceLang, targetLang, isHtml);
+                var translated = await _openAiService.Translate(block, translationOptions);
                 var text = translated
                     .Select(x => x);
 
@@ -353,33 +374,25 @@ public class OpenAiConnector : ITranslationProvider
     }
 
 
-
-
-    public bool Active() => !string.IsNullOrWhiteSpace(_settings.Key);
+    public bool Active() => _openAiService.Enabled();
 
     public bool CanTranslate(TranslationJob job) => true;
 
     public void Reload()
     {
-        _settings.Key = _configService.GetProviderSetting(this.Alias, "key", "");
-        _settings.DeploymentId = _configService.GetProviderSetting(this.Alias, "model", "text-davinci-003");
-        _settings.Endpoint = _configService.GetProviderSetting(this.Alias, "endpoint", string.Empty);
+        _model = _configService.GetProviderSetting(this.Alias, "model", "text-davinci-003");
+        _prompt = _configService.GetProviderSetting(this.Alias, "prompt", OpenAIConstants.DefaultPrompt);
+        _systemPrompt = _configService.GetProviderSetting(this.Alias, "systemPrompt", OpenAIConstants.DefaultSystemPrompt);
 
         _split = _configService.GetProviderSetting(this.Alias, "split", false);
         _asHtml = _configService.GetProviderSetting(this.Alias, "asHtml", false);
 
-        LoadCompleationOptions();
+        _aiServiceName = _configService.GetProviderSetting(Alias, "service", nameof(BetalgoOpenAiService));
+
+        _openAiService = _openAIServiceFactory.GetActiveService();
     }
 
-    private void LoadCompleationOptions()
-    {
-        // advanced options loaded here.
-        _completionsOptions.MaxTokens = _configService.GetProviderSetting(this.Alias, "maxTokens", 500);
-        _completionsOptions.Temperature = _configService.GetProviderSetting(this.Alias, "temperature", 0f);
-        _completionsOptions.FrequencyPenalty = _configService.GetProviderSetting(this.Alias, "frequencyPenalty", 0.0f);
-        _completionsOptions.PresencePenalty = _configService.GetProviderSetting(this.Alias, "presencePenalty", 0.0f);
-        _completionsOptions.NucleusSamplingFactor = _configService.GetProviderSetting(this.Alias, "nucleusSamplingFactor", 1);
-    }
+
 
     public IEnumerable<string> GetTargetLanguages(string sourceLanguage)
         => Enumerable.Empty<string>();
@@ -392,4 +405,11 @@ public class OpenAiConnector : ITranslationProvider
 
     public Task<Attempt<TranslationJob>> Remove(TranslationJob job)
         => Task.FromResult(Attempt.Succeed(job));
+
+
+
+    private TranslationHubClient GetTranslationClientHub()
+    {
+        return new TranslationHubClient(_hubContext, string.Empty);
+    }
 }
