@@ -8,7 +8,7 @@
 		<key alias="name">OpenAi Connector</key>
 		
 		<key alias="beta-warning"><![CDATA[
-			The openAi Translation connector is currently in beta, please test before sending lots of text. You may incurr API costs while testing the connector.
+		Translation via OpenAI can be complex and require changes to configuration to work for you. please test before sending lots of text. You may incur API costs while using this connector.
 		]]></key>
 		
 		<key alias="config-title">OpenAi Config</key>
