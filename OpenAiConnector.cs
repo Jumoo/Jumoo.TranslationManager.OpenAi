@@ -78,51 +78,59 @@ public class OpenAiConnector : ITranslationProvider
         if (!_openAiService.Enabled())
             throw new Exception("OpenAi is not configured");
 
-        var sourceLang = job.SourceCulture.DisplayName;
-        var targetLang = job.TargetCulture.DisplayName;
-
-        _logger.LogDebug("Submitting translations via OpenApi");
-
-        var hub = GetTranslationClientHub();
-        int count = 0;
-
-
-        foreach (var node in job.Nodes)
+        try
         {
-            _logger.LogDebug("Translating: {nodeId}", node.MasterNodeId);
+            var sourceLang = job.SourceCulture.DisplayName;
+            var targetLang = job.TargetCulture.DisplayName;
 
-            hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI");
+            _logger.LogDebug("Submitting translations via OpenApi");
 
-            foreach (var group in node.Groups)
+            var hub = GetTranslationClientHub();
+            int count = 0;
+
+
+            foreach (var node in job.Nodes)
             {
-                foreach (var property in group.Properties)
+                _logger.LogDebug("Translating: {nodeId}", node.MasterNodeId);
+
+                hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI");
+
+                foreach (var group in node.Groups)
                 {
-                    count++;
+                    foreach (var property in group.Properties)
+                    {
+                        count++;
 
-                    _logger.LogDebug("Translation: {nodeId} {group} {property}",
-                        node.MasterNodeId, group, property);
+                        _logger.LogDebug("Translation: {nodeId} {group} {property}",
+                            node.MasterNodeId, group, property);
 
-                    hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI - {count}");
+                        hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI - {count}");
 
 
-                    var result = await GetTranslatedValue(
-                        property.Source, property.Target, sourceLang, targetLang);
-                    if (result == null)
-                        return Attempt<TranslationJob>.Fail(new Exception("No value translated"));
+                        var result = await GetTranslatedValue(
+                            property.Source, property.Target, sourceLang, targetLang);
+                        if (result == null)
+                            return Attempt<TranslationJob>.Fail(new Exception("No value translated"));
 
-                    property.Target = result;
-                }
+                        property.Target = result;
+                    }
 
-                if (_throttle > 0)
-                {
-                    _logger.LogDebug("Throttle: Waiting... {0}ms", _throttle);
-                    await Task.Delay(_throttle);
+                    if (_throttle > 0)
+                    {
+                        _logger.LogDebug("Throttle: Waiting... {0}ms", _throttle);
+                        await Task.Delay(_throttle);
+                    }
                 }
             }
-        }
 
-        job.Status = JobStatus.Received;
-        return Attempt.Succeed(job);
+            job.Status = JobStatus.Received;
+            return Attempt.Succeed(job);
+        }
+        catch(Exception exception)
+        {
+            _logger.LogError(exception, "Error submitting job via openAI connector.");
+            return Attempt<TranslationJob>.Fail(exception);
+        }
     }
 
     private async Task<TranslationValue> GetTranslatedValue(TranslationValue source, TranslationValue target, string sourceLang, string targetLang)

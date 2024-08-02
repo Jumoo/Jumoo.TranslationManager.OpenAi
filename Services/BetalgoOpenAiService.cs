@@ -70,8 +70,9 @@ internal class BetalgoOpenAiService : IOpenAiTranslationService
             Model = translationOptions.Model
         };
 
-        var sourceContent = text.Select(
-            x => ChatMessage.FromUser(x));
+        var sourceContent = text
+            .Where(x => x is not null)
+            .Select(x => ChatMessage.FromUser(x)) ?? Enumerable.Empty<ChatMessage>();
 
         request.Messages.AddRange(sourceContent);
 
@@ -82,7 +83,9 @@ internal class BetalgoOpenAiService : IOpenAiTranslationService
         if (!result.Successful)
             throw new InvalidOperationException(result.Error.Message);
 
-        return result.Choices.Select(x => x.Message.Content);
+        return result.Choices
+            .Where(x => x.Message?.Content is not null)
+            .Select(x => x.Message.Content);
 
     }
 
@@ -91,16 +94,19 @@ internal class BetalgoOpenAiService : IOpenAiTranslationService
         var request = new CompletionCreateRequest
         {
             Model = translationOptions.Model,
+            PromptAsList = new List<string>()
         };
 
-        foreach (var item in text)
+        foreach (var item in text.Where(x => x is not null))
         {
             var promptText = translationOptions.GetPrompt(item);
+            
+            if (string.IsNullOrWhiteSpace(promptText) is true) continue;
             request.PromptAsList.Add(promptText);
         }
 
         var service = GetClient();
-        var result = await service.Completions.CreateCompletion(request);
+        var result = await service?.Completions?.CreateCompletion(request);
 
         if (!result.Successful)
             throw new InvalidOperationException(result.Error.Message);

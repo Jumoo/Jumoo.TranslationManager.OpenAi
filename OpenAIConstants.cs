@@ -13,6 +13,8 @@ public static class OpenAIConstants
     };
 
     public static string[] LegacyModels = new[] {
+        "gpt-3.5-turbo-instruct",
+        "babbage-002",
         "text-davinci-003",
         "text-davinci-002",
         "davinci",
