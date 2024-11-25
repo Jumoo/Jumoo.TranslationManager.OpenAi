@@ -7,6 +7,7 @@
         "ImageUrl": "https://jumoo.co.uk/img/ju_square.jpg"
     },
     "AlternatePackageNames": [ "OpenAI Translation Connector" ],
+    "AlternateCategory": "Artificial Intelligence",
     "Category": "Translations",
     "PackageType": "Integration",
     "LicenseTypes": ["Free", "Purchase"],
