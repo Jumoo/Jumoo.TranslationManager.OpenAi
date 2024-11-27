@@ -2,7 +2,10 @@
 using System.Linq;
 
 using Jumoo.TranslationManager.Core.Boot;
+#if UMB_14_OR_GREATER
+#else
 using Jumoo.TranslationManager.OpenAi.Controllers;
+#endif
 using Jumoo.TranslationManager.OpenAi.Services;
 
 using Microsoft.AspNetCore.Routing;
@@ -33,14 +36,17 @@ internal class OpenAiComposer : IComposer
 
         // so we can swap services out. 
         builder.Services.AddSingleton<OpenAIServiceFactory>();
-
+#if UMB_14_OR_GREATER
+#else
         if (!builder.ManifestFilters().Has<OpenAiConnectorManifestFilter>())
             builder.ManifestFilters().Append<OpenAiConnectorManifestFilter>();
 
         builder.AddNotificationHandler<ServerVariablesParsingNotification, OpenAiServerVariablesParserHandler>();
+#endif
     }
 }
-
+#if UMB_14_OR_GREATER
+#else
 internal class OpenAiConnectorManifestFilter : IManifestFilter
 {
     public void Filter(List<PackageManifest> manifests)
@@ -80,3 +86,4 @@ public class OpenAiServerVariablesParserHandler :
         });
     }
 }
+#endif

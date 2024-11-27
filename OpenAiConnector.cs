@@ -69,8 +69,13 @@ public class OpenAiConnector : ITranslationProvider
 
     public TranslationProviderViews Views => new TranslationProviderViews()
     {
-        Config = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "config.html"),
-        Pending = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "pending.html"),
+#if UMB_14_OR_GREATER
+        Config = "jumoo-openai-config",
+        Pending = "jumoo-deepl-pending"
+#else
+        Config = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "legacy/config.html"),
+        Pending = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "legacy/pending.html")
+#endif
     };
 
     public async Task<Attempt<TranslationJob>> Submit(TranslationJob job)

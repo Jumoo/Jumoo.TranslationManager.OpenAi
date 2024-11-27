@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UMB_13_OR_LESS
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,3 +34,4 @@ public class OpenAiController : UmbracoAuthorizedApiController
         => _openAIServiceFactory.GetServices()
             .Select(x => x.GetType().Name);
 }
+#endif
