@@ -1,4 +1,6 @@
-﻿namespace Jumoo.TranslationManager.OpenAi;
+﻿using System;
+
+namespace Jumoo.TranslationManager.OpenAi;
 
 public static class OpenAIConstants
 {

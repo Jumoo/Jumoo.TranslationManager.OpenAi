@@ -68,7 +68,7 @@
 		<key alias="temparature-desc">Sampling temperature</key>
 
 		<key alias="frequencyPenalty">Frequency Penalty</key>
-		<key alias="frequencyPenalty-desc">sitive values penalize new tokens based on their existing frequency in the text so far</key>
+		<key alias="frequencyPenalty-desc">Positive values penalize new tokens based on their existing frequency in the text so far</key>
 
 		<key alias="presencePenalty">Presence Penalty</key>
 		<key alias="presencePenalty-desc">Positive values penalize new tokens based on whether they appear in the text so far</key>

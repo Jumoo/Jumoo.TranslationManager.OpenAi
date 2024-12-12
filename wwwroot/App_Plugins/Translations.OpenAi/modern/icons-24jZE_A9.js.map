@@ -1,0 +1,1 @@
+{"version":3,"file":"icons-24jZE_A9.js","sources":["../../../../openai-client/src/icons/icons.ts"],"sourcesContent":["export default [\r\n\t{\r\n\t\tname: 'jumoo-tm-openai-logo',\r\n\t\tpath: () => import('./openai-logo.js'),\r\n\t},\r\n];"],"names":["icons"],"mappings":"AAAA,MAAeA,IAAA;AAAA,EACd;AAAA,IACC,MAAM;AAAA,IACN,MAAM,MAAM,OAAO,2BAAkB;AAAA,EAAA;AAEvC;"}

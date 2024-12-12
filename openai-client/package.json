@@ -1,0 +1,33 @@
+{
+    "name": "jumoo-openai-client",
+    "version": "14.0.0",
+    "licence": "Custom",
+    "description": "Jumoo openai connector",
+    "type": "module",
+    "author": {
+      "name": "Jumoo",
+      "email": "info@jumoo.co.uk",
+      "url": "https://jumoo.co.uk"
+    },
+    "scripts": {
+      "build": "tsc && vite build",
+      "watch": "vite build --watch",
+      "generate": "rm-rs -r -f ./src/api && openapi-ts",
+      "format:fix": "npm run format -- --write",
+      "format": "prettier \"src/**/*.ts\" --check"
+    },
+    "devDependencies": {
+      "@hey-api/openapi-ts": "^0.53.0",
+      "@jumoo/translate": "^15.0.0",
+      "@rollup/plugin-node-resolve": "^15.2.3",
+      "@umbraco-cms/backoffice": "^15.0.0",
+      "lit": "^3.1.3",
+      "prettier": "^3.3.3",
+      "rm-rs": "^0.2.3",
+      "typescript": "^5.6.2",
+      "vite": "^5.2.12",
+      "vite-plugin-checker": "^0.6.4",
+      "vite-plugin-static-copy": "^1.0.6"
+    }
+  }
+  

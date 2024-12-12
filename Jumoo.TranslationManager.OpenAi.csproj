@@ -55,6 +55,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="wwwroot\App_Plugins\Translations.OpenAi\Modern\" />
+	  <Folder Include="wwwroot\App_Plugins\Translations.OpenAi\modern\" />
 	</ItemGroup>
 </Project>

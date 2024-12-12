@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 using Jumoo.TranslationManager.Core.Boot;
+using Jumoo.TranslationManager.Core.Models;
+
 #if UMB_14_OR_GREATER
+using Umbraco.Cms.Infrastructure.Manifest;
 #else
 using Jumoo.TranslationManager.OpenAi.Controllers;
 #endif
@@ -37,6 +40,7 @@ internal class OpenAiComposer : IComposer
         // so we can swap services out. 
         builder.Services.AddSingleton<OpenAIServiceFactory>();
 #if UMB_14_OR_GREATER
+        builder.Services.AddSingleton<IPackageManifestReader, PassthroughConnectorManifestReader>();
 #else
         if (!builder.ManifestFilters().Has<OpenAiConnectorManifestFilter>())
             builder.ManifestFilters().Append<OpenAiConnectorManifestFilter>();
@@ -46,6 +50,21 @@ internal class OpenAiComposer : IComposer
     }
 }
 #if UMB_14_OR_GREATER
+public class PassthroughConnectorManifestReader : IPackageManifestReader
+{
+    public Task<IEnumerable<PackageManifest>> ReadPackageManifestsAsync()
+    {
+        var manifest = new ConnectorPackageManifest
+        {
+            Name = OpenAiConnector.ConnectorName,
+            Alias = OpenAiConnector.ConnectorAlias,
+            Version = OpenAiConnector.ConnectorVersion,
+            EntryPointScript = WebPath.Combine(OpenAiConnector.ConnectorPluginPath, "OpenAi.js")
+        };
+
+        return Task.FromResult(manifest.ToPackageManifest().AsEnumerableOfOne());
+    }
+}
 #else
 internal class OpenAiConnectorManifestFilter : IManifestFilter
 {

@@ -28,7 +28,11 @@ public class OpenAiConnector : ITranslationProvider
     public static string ConnectorName = "OpenAi Connector";
     public static string ConnectorAlias = "openAiConnector";
     public static string ConnectorVersion = typeof(OpenAiConnector).Assembly.GetName().Version.ToString(3);
-    public static string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/";
+#if UMB_14_OR_GREATER
+    public static string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/modern/";
+#else
+    public static string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/legacy/";
+#endif
 
 
     private readonly TranslationConfigService _configService;
@@ -71,7 +75,7 @@ public class OpenAiConnector : ITranslationProvider
     {
 #if UMB_14_OR_GREATER
         Config = "jumoo-openai-config",
-        Pending = "jumoo-deepl-pending"
+        Pending = "jumoo-openai-pending"
 #else
         Config = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "legacy/config.html"),
         Pending = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "legacy/pending.html")
