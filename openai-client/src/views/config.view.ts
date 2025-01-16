@@ -1,5 +1,6 @@
 import { JUMOO_TM_CONNECTOR_SETTINGS_CONTEXT, TranslationConnectorConfigElement, TranslationConnectorConfigElementBase, TranslationConnectorSettingsContext } from "@jumoo/translate";
 import { css, customElement, html } from "@umbraco-cms/backoffice/external/lit";
+import { openAiTranslateModels } from "../api";
 
 @customElement("jumoo-openai-config")
 export class TranslationOpenAiConnectorConfigElement 
@@ -15,6 +16,15 @@ export class TranslationOpenAiConnectorConfigElement
             this.#context = _context;
           });
         }
+
+        async connectedCallback() {
+          super.connectedCallback();
+
+          const models = await openAiTranslateModels();
+          console.log(models);
+
+        }
+
         render(){
             return html`
           <umb-body-layout>
@@ -123,7 +133,8 @@ export class TranslationOpenAiConnectorConfigElement
             <div slot="editor">
              <uui-select
              placeholder="Select an option"
-             .options=${options}></uui-select>
+             .options=${options}
+             @change=${this.onUpdateOption}></uui-select>
             </div></umb-property-layout>`
         }
 
@@ -135,7 +146,8 @@ export class TranslationOpenAiConnectorConfigElement
               <uui-input
               id="model"
               label="Model"
-              value=${(this.settings?.model as string) ?? "text-davinci-003"}>
+              value=${(this.settings?.model as string) ?? "gpt-3.5-turbo-instruct"}
+              @change=${this.onUpdateOption}>
               </uui-input>
             </div>
           </umb-property-layout>`
@@ -150,7 +162,8 @@ export class TranslationOpenAiConnectorConfigElement
               id="maxTokens"
               label="MaxTokens"
               type="number"
-              value=${(this.settings?.maxTokens as number) ?? 500}>
+              value=${(this.settings?.maxTokens as number) ?? 500}
+              @change=${this.onUpdateOption}>
               </uui-input>
             </div>
           </umb-property-layout>`
@@ -166,7 +179,9 @@ export class TranslationOpenAiConnectorConfigElement
               label="Temperature"
               type="number"
               step="0.1"
-              value=${(this.settings?.temperature as number) ?? 0.0}></uui-input>
+              value=${(this.settings?.temperature as number) ?? 0.0}
+              @change=${this.onUpdateOption}>
+            </uui-input>
             </div>
           </umb-property-layout>`
         }
@@ -181,7 +196,9 @@ export class TranslationOpenAiConnectorConfigElement
               label="FrequencyPenalty"
               type="number"
               step="0.1"
-              value=${(this.settings?.frequencyPenalty as number) ?? 0.0}></uui-input>
+              value=${(this.settings?.frequencyPenalty as number) ?? 0.0}
+              @change=${this.onUpdateOption}>
+            </uui-input>
             </div>
           </umb-property-layout>`
         }
@@ -196,7 +213,9 @@ export class TranslationOpenAiConnectorConfigElement
               label="PresencePenalty"
               type="number"
               step="0.1"
-              value=${(this.settings?.presencePenalty as number) ?? 0.0}></uui-input>
+              value=${(this.settings?.presencePenalty as number) ?? 0.0}
+              @change=${this.onUpdateOption}>
+            </uui-input>
             </div>
           </umb-property-layout>`
         }
@@ -204,13 +223,15 @@ export class TranslationOpenAiConnectorConfigElement
         renderNucleusSamplingFactor(){
           return html`<umb-property-layout
           label="Nucleus sampling"
-          description=".">
+          description="">
             <div slot="editor">
               <uui-input
               id="nucleusSampling"
               label="NucleusSampling"
               type="number"
-              value=${(this.settings?.nucleusSampling as number) ?? 1}></uui-input>
+              value=${(this.settings?.nucleusSampling as number) ?? 1}
+              @change=${this.onUpdateOption}>
+            </uui-input>
             </div>
           </umb-property-layout>`
         }

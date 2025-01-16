@@ -397,7 +397,7 @@ public class OpenAiConnector : ITranslationProvider
 
     public void Reload()
     {
-        _model = _configService.GetProviderSetting(this.Alias, "model", "text-davinci-003");
+        _model = _configService.GetProviderSetting(this.Alias, "model", "gpt-3.5-turbo-instruct");
         _prompt = _configService.GetProviderSetting(this.Alias, "prompt", OpenAIConstants.DefaultPrompt);
         _systemPrompt = _configService.GetProviderSetting(this.Alias, "systemPrompt", OpenAIConstants.DefaultSystemPrompt);
 

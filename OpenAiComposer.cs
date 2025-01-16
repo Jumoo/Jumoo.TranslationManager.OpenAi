@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using Jumoo.TranslationManager.Core.Boot;
 using Jumoo.TranslationManager.Core.Models;
 
-#if UMB_14_OR_GREATER
+#if UMB_15_OR_GREATER
 using Umbraco.Cms.Infrastructure.Manifest;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.OpenApi.Models;
 #else
 using Jumoo.TranslationManager.OpenAi.Controllers;
 #endif
@@ -21,6 +23,8 @@ using Umbraco.Cms.Core.Manifest;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Extensions;
+using Microsoft.Extensions.Options;
+
 
 namespace Jumoo.TranslationManager.OpenAi;
 
@@ -40,6 +44,7 @@ internal class OpenAiComposer : IComposer
         // so we can swap services out. 
         builder.Services.AddSingleton<OpenAIServiceFactory>();
 #if UMB_14_OR_GREATER
+        builder.Services.ConfigureOptions<ConfigureSwaggerGenOptions>();
         builder.Services.AddSingleton<IPackageManifestReader, PassthroughConnectorManifestReader>();
 #else
         if (!builder.ManifestFilters().Has<OpenAiConnectorManifestFilter>())
@@ -65,6 +70,29 @@ public class PassthroughConnectorManifestReader : IPackageManifestReader
         return Task.FromResult(manifest.ToPackageManifest().AsEnumerableOfOne());
     }
 }
+
+internal class ConfigureSwaggerGenOptions : IConfigureOptions<SwaggerGenOptions>
+{
+    public void Configure(SwaggerGenOptions options)
+    {
+        options.SwaggerDoc(
+            "tm-openai",
+            new OpenApiInfo
+            {
+                Title = "OpenAi Translation API",
+                Version = "Latest",
+                Description = "it's OpenAi methods"
+            });
+
+        // sets the operation Ids to be the same as the action
+        // so it loses all the v1... bits to the names.
+        options.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"]}");
+
+    }
+}
+
+
+
 #else
 internal class OpenAiConnectorManifestFilter : IManifestFilter
 {
