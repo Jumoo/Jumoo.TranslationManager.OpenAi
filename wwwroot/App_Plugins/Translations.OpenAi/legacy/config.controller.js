@@ -44,8 +44,12 @@
 
         function prepSettings(newValue) {
 
+            if (newValue.apiKey === undefined && newValue.key != undefined) {
+                newValue.apiKey = newValue.key;
+            }
+
             if (newValue.model === undefined) {
-                newValue.model = 'text-davinci-003';
+                newValue.model = 'gpt-3.5-turbo-instruct';
             }
 
             if (newValue.maxTokens === undefined) {

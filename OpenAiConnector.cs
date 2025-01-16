@@ -77,8 +77,8 @@ public class OpenAiConnector : ITranslationProvider
         Config = "jumoo-openai-config",
         Pending = "jumoo-openai-pending"
 #else
-        Config = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "legacy/config.html"),
-        Pending = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "legacy/pending.html")
+        Config = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "config.html"),
+        Pending = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "pending.html")
 #endif
     };
 
