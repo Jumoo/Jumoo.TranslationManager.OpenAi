@@ -133,6 +133,9 @@ public class OpenAiConnector : ITranslationProvider
             }
 
             job.Status = JobStatus.Received;
+#if NET7_0_OR_GREATER
+            job.ProviderStatus = "Translated via OpenAI";
+#endif
             return Attempt.Succeed(job);
         }
         catch(Exception exception)
