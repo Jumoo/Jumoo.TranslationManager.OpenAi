@@ -387,7 +387,7 @@ public class OpenAiConnector : ITranslationProvider
         }
 
         _logger.LogDebug("Translated: {translated}", translatedText.ToString());
-        return translatedText.ToString();
+        return translatedText.ToString().Trim();
     }
 
 
