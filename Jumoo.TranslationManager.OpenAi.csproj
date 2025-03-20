@@ -52,7 +52,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.8" />
-		<PackageReference Include="Betalgo.OpenAI" Version="7.3.1" />
+		<PackageReference Include="Betalgo.Ranul.OpenAI" Version="9.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
