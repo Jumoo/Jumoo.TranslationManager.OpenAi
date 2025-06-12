@@ -8,7 +8,7 @@ using HtmlAgilityPack;
 
 using Jumoo.TranslationManager.Core;
 using Jumoo.TranslationManager.Core.Configuration;
-using Jumoo.TranslationManager.Core.Hubs;
+
 using Jumoo.TranslationManager.Core.Models;
 using Jumoo.TranslationManager.Core.Providers;
 using Jumoo.TranslationManager.OpenAi.Models;
@@ -37,7 +37,7 @@ public class OpenAiConnector : ITranslationProvider
 
     private readonly TranslationConfigService _configService;
     private readonly ILogger<OpenAiConnector> _logger;
-    private readonly IHubContext<TranslationHub> _hubContext;
+
 
     private readonly OpenAIServiceFactory _openAIServiceFactory;
     private IOpenAiTranslationService _openAiService;
@@ -58,16 +58,13 @@ public class OpenAiConnector : ITranslationProvider
     public OpenAiConnector(
         TranslationConfigService configService,
         ILogger<OpenAiConnector> logger,
-        OpenAIServiceFactory openAIServiceFactory,
-        IHubContext<TranslationHub> hubContext)
+        OpenAIServiceFactory openAIServiceFactory)
     {
 
         // defaults. 
         _configService = configService;
         _logger = logger;
         _openAIServiceFactory = openAIServiceFactory;
-        _hubContext = hubContext;
-
         Reload();
     }
 
@@ -94,15 +91,12 @@ public class OpenAiConnector : ITranslationProvider
 
             _logger.LogDebug("Submitting translations via OpenApi");
 
-            var hub = GetTranslationClientHub();
             int count = 0;
 
 
             foreach (var node in job.Nodes)
             {
                 _logger.LogDebug("Translating: {nodeId}", node.MasterNodeId);
-
-                hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI");
 
                 foreach (var group in node.Groups)
                 {
@@ -113,7 +107,6 @@ public class OpenAiConnector : ITranslationProvider
                         _logger.LogDebug("Translation: {nodeId} {group} {property}",
                             node.MasterNodeId, group, property);
 
-                        hub.SendMessage($"Translating {node.MasterNodeName} via OpenAI - {count}");
 
 
                         var result = await GetTranslatedValue(
@@ -428,8 +421,5 @@ public class OpenAiConnector : ITranslationProvider
 
 
 
-    private TranslationHubClient GetTranslationClientHub()
-    {
-        return new TranslationHubClient(_hubContext, string.Empty);
-    }
+
 }

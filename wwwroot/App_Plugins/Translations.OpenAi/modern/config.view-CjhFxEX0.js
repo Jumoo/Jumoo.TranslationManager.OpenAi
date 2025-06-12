@@ -1,37 +1,40 @@
-import {
-  JUMOO_TM_CONNECTOR_SETTINGS_CONTEXT,
-  TranslationConnectorConfigElement,
-  TranslationConnectorConfigElementBase,
-  TranslationConnectorSettingsContext,
-} from "@jumoo/translate";
-import { css, customElement, html } from "@umbraco-cms/backoffice/external/lit";
-import { OpenAiTranslate } from "../api";
-
-@customElement("jumoo-openai-config")
-export class TranslationOpenAiConnectorConfigElement
-  extends TranslationConnectorConfigElementBase
-  implements TranslationConnectorConfigElement
-{
-  #context?: TranslationConnectorSettingsContext;
-
-  constructor() {
-    super();
-
-    this.consumeContext(JUMOO_TM_CONNECTOR_SETTINGS_CONTEXT, (_context) => {
-      this.#context = _context;
-      console.debug(this.#context);
+import { TranslationConnectorConfigElementBase as y, JUMOO_TM_CONNECTOR_SETTINGS_CONTEXT as h } from "@jumoo/translate";
+import { html as i, css as m, customElement as b } from "@umbraco-cms/backoffice/external/lit";
+import { c as p } from "./index-Dp2j7DRs.js";
+class v {
+  static openAiTranslateModels(t) {
+    return ((t == null ? void 0 : t.client) ?? p).get({
+      url: "/umbraco/tm-openai/api/v1/Models",
+      ...t
     });
   }
-
+  static openAiTranslateServices(t) {
+    return ((t == null ? void 0 : t.client) ?? p).get({
+      url: "/umbraco/tm-openai/api/v1/Services",
+      ...t
+    });
+  }
+}
+var g = Object.defineProperty, f = Object.getOwnPropertyDescriptor, d = (e) => {
+  throw TypeError(e);
+}, x = (e, t, n, a) => {
+  for (var r = a > 1 ? void 0 : a ? f(t, n) : t, u = e.length - 1, s; u >= 0; u--)
+    (s = e[u]) && (r = (a ? s(t, n, r) : s(r)) || r);
+  return a && r && g(t, n, r), r;
+}, c = (e, t, n) => t.has(e) || d("Cannot " + n), T = (e, t, n) => (c(e, t, "read from private field"), t.get(e)), $ = (e, t, n) => t.has(e) ? d("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, n), O = (e, t, n, a) => (c(e, t, "write to private field"), t.set(e, n), n), o;
+let l = class extends y {
+  constructor() {
+    super(), $(this, o), this.consumeContext(h, (e) => {
+      O(this, o, e), console.debug(T(this, o));
+    });
+  }
   async connectedCallback() {
     super.connectedCallback();
-
-    const models = await OpenAiTranslate.openAiTranslateModels();
-    console.log(models);
+    const e = await v.openAiTranslateModels();
+    console.log(e);
   }
-
   render() {
-    return html` <umb-body-layout>
+    return i` <umb-body-layout>
       <div class="layout">
         <div class="left">
           <uui-box>
@@ -54,42 +57,41 @@ export class TranslationOpenAiConnectorConfigElement
       </div>
     </umb-body-layout>`;
   }
-
   renderApiKey() {
-    return html` <umb-property-layout
+    var e;
+    return i` <umb-property-layout
       label="Api Key"
       description="OpenAi Translation Api Key"
       ><div slot="editor">
         <uui-input
           id="apiKey"
           label="ApiKey"
-          .value=${(this.settings?.apiKey as string) ?? ""}
+          .value=${((e = this.settings) == null ? void 0 : e.apiKey) ?? ""}
           @change=${this.onUpdateOption}
         ></uui-input>
       </div>
     </umb-property-layout>`;
   }
-
   renderThrottle() {
-    const throttle = this.settings?.throttle || 250;
-
-    return html` <umb-property-layout
+    var t;
+    const e = ((t = this.settings) == null ? void 0 : t.throttle) || 250;
+    return i` <umb-property-layout
       label="Throttle"
       description="Number of milliseconds to wait between calls (To Avoid API Throttling)"
     >
       <div slot="editor">
         <uui-input
           id="throttle"
-          value=${throttle}
+          value=${e}
           label="throttle (ms)"
           @change=${this.onUpdateOption}
         ></uui-input>
       </div>
     </umb-property-layout>`;
   }
-
   renderSplitOption() {
-    return html` <umb-property-layout
+    var e;
+    return i` <umb-property-layout
       label="Split"
       description="Split any HTML before sending to translation"
     >
@@ -97,16 +99,16 @@ export class TranslationOpenAiConnectorConfigElement
         <uui-checkbox
           label="Split Html"
           id="split"
-          .checked=${(this.settings?.split as boolean) ?? false}
+          .checked=${((e = this.settings) == null ? void 0 : e.split) ?? !1}
           @change=${this.onUpdateOption}
         >
         </uui-checkbox>
       </div>
     </umb-property-layout>`;
   }
-
   renderSendAsHtmlOption() {
-    return html` <umb-property-layout
+    var e;
+    return i` <umb-property-layout
       label="Send as HTML"
       description="Make sure html elments are marked as html when sent to translation"
     >
@@ -114,39 +116,36 @@ export class TranslationOpenAiConnectorConfigElement
         <uui-checkbox
           id="asHtml"
           label="Send as HTML"
-          .checked=${(this.settings?.asHtml as boolean) ?? false}
+          .checked=${((e = this.settings) == null ? void 0 : e.asHtml) ?? !1}
           @change=${this.onUpdateOption}
         >
         </uui-checkbox>
       </div>
     </umb-property-layout>`;
   }
-
   renderService() {
-    const options: Array<Option> = [
-      { name: "Carrot", value: "orange" },
-      { name: "Cucumber", value: "green" },
-      { name: "Aubergine", value: "purple" },
-      { name: "Blueberry", value: "Blue" },
-      { name: "Banana", value: "yellow" },
-      { name: "Strawberry", value: "red" },
-    ];
-
-    return html`<umb-property-layout
+    return i`<umb-property-layout
       label="OpenAi Library"
       description="Choose which API Library to use when sending translations"
     >
       <div slot="editor">
         <uui-select
           placeholder="Select an option"
-          .options=${options}
+          .options=${[
+      { name: "Carrot", value: "orange" },
+      { name: "Cucumber", value: "green" },
+      { name: "Aubergine", value: "purple" },
+      { name: "Blueberry", value: "Blue" },
+      { name: "Banana", value: "yellow" },
+      { name: "Strawberry", value: "red" }
+    ]}
           @change=${this.onUpdateOption}
         ></uui-select></div
     ></umb-property-layout>`;
   }
-
   renderModel() {
-    return html`<umb-property-layout
+    var e;
+    return i`<umb-property-layout
       label="Model"
       description="OpenAi Model to use to translation"
     >
@@ -154,16 +153,16 @@ export class TranslationOpenAiConnectorConfigElement
         <uui-input
           id="model"
           label="Model"
-          value=${(this.settings?.model as string) ?? "gpt-3.5-turbo-instruct"}
+          value=${((e = this.settings) == null ? void 0 : e.model) ?? "gpt-3.5-turbo-instruct"}
           @change=${this.onUpdateOption}
         >
         </uui-input>
       </div>
     </umb-property-layout>`;
   }
-
   renderMaxTokens() {
-    return html`<umb-property-layout
+    var e;
+    return i`<umb-property-layout
       label="Max Tokens"
       description="The maximum number of tokens to generate in the completion."
     >
@@ -172,16 +171,16 @@ export class TranslationOpenAiConnectorConfigElement
           id="maxTokens"
           label="MaxTokens"
           type="number"
-          value=${(this.settings?.maxTokens as number) ?? 500}
+          value=${((e = this.settings) == null ? void 0 : e.maxTokens) ?? 500}
           @change=${this.onUpdateOption}
         >
         </uui-input>
       </div>
     </umb-property-layout>`;
   }
-
   renderTemperature() {
-    return html`<umb-property-layout
+    var e;
+    return i`<umb-property-layout
       label="Temperature"
       description="Sampling temperature"
     >
@@ -191,16 +190,16 @@ export class TranslationOpenAiConnectorConfigElement
           label="Temperature"
           type="number"
           step="0.1"
-          value=${(this.settings?.temperature as number) ?? 0.0}
+          value=${((e = this.settings) == null ? void 0 : e.temperature) ?? 0}
           @change=${this.onUpdateOption}
         >
         </uui-input>
       </div>
     </umb-property-layout>`;
   }
-
   renderFrequencyPenalty() {
-    return html`<umb-property-layout
+    var e;
+    return i`<umb-property-layout
       label="Frequency Penalty"
       description="Positive values penalize new tokens based on their existing frequency in the text so far"
     >
@@ -210,16 +209,16 @@ export class TranslationOpenAiConnectorConfigElement
           label="FrequencyPenalty"
           type="number"
           step="0.1"
-          value=${(this.settings?.frequencyPenalty as number) ?? 0.0}
+          value=${((e = this.settings) == null ? void 0 : e.frequencyPenalty) ?? 0}
           @change=${this.onUpdateOption}
         >
         </uui-input>
       </div>
     </umb-property-layout>`;
   }
-
   renderPresencePenalty() {
-    return html`<umb-property-layout
+    var e;
+    return i`<umb-property-layout
       label="Presence Penalty"
       description="Positive values penalize new tokens based on their existing frequency in the text so far"
     >
@@ -229,30 +228,31 @@ export class TranslationOpenAiConnectorConfigElement
           label="PresencePenalty"
           type="number"
           step="0.1"
-          value=${(this.settings?.presencePenalty as number) ?? 0.0}
+          value=${((e = this.settings) == null ? void 0 : e.presencePenalty) ?? 0}
           @change=${this.onUpdateOption}
         >
         </uui-input>
       </div>
     </umb-property-layout>`;
   }
-
   renderNucleusSamplingFactor() {
-    return html`<umb-property-layout label="Nucleus sampling" description="">
+    var e;
+    return i`<umb-property-layout label="Nucleus sampling" description="">
       <div slot="editor">
         <uui-input
           id="nucleusSampling"
           label="NucleusSampling"
           type="number"
-          value=${(this.settings?.nucleusSampling as number) ?? 1}
+          value=${((e = this.settings) == null ? void 0 : e.nucleusSampling) ?? 1}
           @change=${this.onUpdateOption}
         >
         </uui-input>
       </div>
     </umb-property-layout>`;
   }
-
-  static styles = css`
+};
+o = /* @__PURE__ */ new WeakMap();
+l.styles = m`
     .layout {
       display: flex;
       gap: var(--uui-size-space-5);
@@ -285,6 +285,12 @@ export class TranslationOpenAiConnectorConfigElement
       width: 100%;
     }
   `;
-}
-
-export default TranslationOpenAiConnectorConfigElement;
+l = x([
+  b("jumoo-openai-config")
+], l);
+const w = l;
+export {
+  l as TranslationOpenAiConnectorConfigElement,
+  w as default
+};
+//# sourceMappingURL=config.view-CjhFxEX0.js.map

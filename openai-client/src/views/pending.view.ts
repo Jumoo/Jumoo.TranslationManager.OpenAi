@@ -2,11 +2,16 @@ import {
   TranslationConnectorPendingElement,
   TranslationConnectorPendingElementBase,
 } from "@jumoo/translate";
-import {
-  css,
-  customElement,
-  html
-} from "@umbraco-cms/backoffice/external/lit";
+import { css, customElement, html } from "@umbraco-cms/backoffice/external/lit";
+
+type openAiSettings = {
+  model: string;
+  maxTokens: string;
+  temperature: string;
+  frequencyPenalty: string;
+  presencePenalty: string;
+  nucleusSampling: string;
+};
 
 @customElement("jumoo-openai-pending")
 export class TranslationOpenAiConnectorPendingElement
@@ -14,42 +19,31 @@ export class TranslationOpenAiConnectorPendingElement
   implements TranslationConnectorPendingElement
 {
   render() {
+    const settings = this.connector?.settings as openAiSettings;
     return html`<uui-box>
       <div class="setting">
         <div class="title">Model</div>
-        <div class="value">
-            ${this.connector?.settings?.model ?? "text-davinci-003"}
-        </div>
+        <div class="value">${settings?.model ?? "text-davinci-003"}</div>
       </div>
       <div class="setting">
         <div class="title">Max Tokens</div>
-        <div class="value">
-            ${this.connector?.settings?.maxTokens ?? "500"}
-        </div>
+        <div class="value">${settings?.maxTokens ?? "500"}</div>
       </div>
       <div class="setting">
         <div class="title">Temperature</div>
-        <div class="value">
-            ${this.connector?.settings?.temperature ?? "0"}
-        </div>
+        <div class="value">${settings?.temperature ?? "0"}</div>
       </div>
       <div class="setting">
         <div class="title">Frequency Penalty</div>
-        <div class="value">
-            ${this.connector?.settings?.frequencyPenalty ?? "0"}
-        </div>
+        <div class="value">${settings?.frequencyPenalty ?? "0"}</div>
       </div>
       <div class="setting">
         <div class="title">Presence Penalty</div>
-        <div class="value">
-            ${this.connector?.settings?.presencePenalty ?? "0"}
-        </div>
+        <div class="value">${settings?.presencePenalty ?? "0"}</div>
       </div>
       <div class="setting">
         <div class="title">Nucleus Sampling</div>
-        <div class="value">
-            ${this.connector?.settings?.nucleusSampling ?? "1"}
-        </div>
+        <div class="value">${settings?.nucleusSampling ?? "1"}</div>
       </div>
     </uui-box>`;
   }
