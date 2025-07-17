@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<StaticWebAssetBasePath>/</StaticWebAssetBasePath>
 	</PropertyGroup>
 
@@ -29,13 +29,6 @@
 	<ItemGroup>
 		<None Include="logo.png" Pack="true" PackagePath="\" />
 		<None Include="readme.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
-
-	<ItemGroup Condition="$(DefineConstants.Contains(UMB_10_ONLY))">
-
-		<PackageReference Include="Jumoo.TranslationManager.Core" Version="10.0.0" />
-		<PackageReference Include="Jumoo.TranslationManager.Serializers" Version="10.0.0" />
-		<PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains(UMB_13_ONLY))">
