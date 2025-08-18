@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Azure.AI.OpenAI;
+﻿using Azure.AI.OpenAI;
 
 using Jumoo.TranslationManager.OpenAi.Models;
 
-using Lucene.Net.Util;
-
 using Microsoft.Extensions.Logging;
-
+using OpenAI.Chat;
+using System;
+using System.ClientModel;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Umbraco.Extensions;
 
 namespace Jumoo.TranslationManager.OpenAi.Services;
 
 
-public class AzureOpenAiService: IOpenAiTranslationService
+public class AzureOpenAiService : IOpenAiTranslationService
 {
     // private ChatCompletionsOptions _completionOptions;
     private ILogger<AzureOpenAiService> _logger;
@@ -32,13 +30,16 @@ public class AzureOpenAiService: IOpenAiTranslationService
     }
 
     public bool Enabled()
-        => string.IsNullOrEmpty(_openAiConfigService.GetAuthOptions()?.Key) is false; 
+        => string.IsNullOrEmpty(_openAiConfigService.GetAuthOptions()?.Key) is false;
 
-    private OpenAIClient GetClient()
+    private ChatClient GetClient(string model)
     {
         var authOptions = _openAiConfigService.GetAuthOptions();
-        return UsingOpenAiUrl(authOptions.Endpoint) ? new OpenAIClient(authOptions.Key) 
-            : new OpenAIClient( new Uri(authOptions.Endpoint), new Azure.AzureKeyCredential(authOptions.Key));
+
+        AzureOpenAIClient azureClient = new(
+            new Uri(authOptions.Endpoint),
+            new ApiKeyCredential(authOptions.Key));
+        return azureClient.GetChatClient(model);
     }
 
     private bool UsingOpenAiUrl(string url)
@@ -46,11 +47,11 @@ public class AzureOpenAiService: IOpenAiTranslationService
 
     public async Task<IEnumerable<string>> Models()
     {
-        var client = GetClient();
+        // var client = GetClient();
         return await Task.FromResult(Enumerable.Empty<string>());
     }
-            
- 
+
+
     public async Task<IEnumerable<string>> Translate(List<string> text, OpenAITranslationOptions translationOptions)
     {
         var textType = translationOptions.IsHtml ? "html" : "text";
@@ -72,7 +73,7 @@ public class AzureOpenAiService: IOpenAiTranslationService
             return await TranslateLegacy(prompts, translationOptions);
         }
 
-        return await TranslateLatest(translationOptions, text, textType);        
+        return await TranslateLatest(translationOptions, text, textType);
     }
 
     #region legacy / base translation 
@@ -80,23 +81,24 @@ public class AzureOpenAiService: IOpenAiTranslationService
     private async Task<List<string>> TranslateLegacy(IEnumerable<string> prompts, OpenAITranslationOptions translationOptions)
     {
         var completionOptions = DefaultLegacyCompletionOptions(LoadCompletionsOptions());
-        completionOptions.Prompts.AddRange(prompts);
 
-        var client = GetClient();
+        var chatMessages = prompts.Select(x => ChatMessage.CreateUserMessage(x));
 
-        var result = await client.GetCompletionsAsync(translationOptions.Model, completionOptions);
+        var client = GetClient(translationOptions.Model);
 
-        return result.Value.Choices.Select(x => x.Text).ToList();
+        var result = await client.CompleteChatAsync(chatMessages, completionOptions);
+
+        return result.Value.Content.Select(x => x.Text).ToList();
     }
 
-    private CompletionsOptions DefaultLegacyCompletionOptions(ChatCompletionsOptions options)
-        => new CompletionsOptions
+    private ChatCompletionOptions DefaultLegacyCompletionOptions(ChatCompletionsOptions options)
+        => new ChatCompletionOptions
         {
-            MaxTokens = options?.MaxTokens ?? 500,
+            MaxOutputTokenCount = options?.MaxTokens ?? 500,
             Temperature = options?.Temperature ?? 0f,
             FrequencyPenalty = options?.FrequencyPenalty ?? 0.0f,
             PresencePenalty = options?.PresencePenalty ?? 0.0f,
-            NucleusSamplingFactor = options?.NucleusSamplingFactor ?? 1
+            TopP = options?.NucleusSamplingFactor ?? 1
         };
 
     #endregion
@@ -107,26 +109,17 @@ public class AzureOpenAiService: IOpenAiTranslationService
     {
         var chatOptions = DefaultChatCompletionOptions(LoadCompletionsOptions());
 
-        var systemPrompt = new ChatMessage
-        {
-            Role = ChatRole.System,
-            Content = translationOptions.GetSystemPrompt()
-        };
+        var messages = new List<ChatMessage>();
 
-        var messagePrompts = text.Select(content => new ChatMessage
-        {
-            Content = content,
-            Role = ChatRole.User
-        });
+        messages.Add(ChatMessage.CreateSystemMessage(translationOptions.GetSystemPrompt()));
+        messages.AddRange(text.Select(content => ChatMessage.CreateUserMessage(content)));
 
-        chatOptions.Messages.Add(systemPrompt);
-        chatOptions.Messages.AddRange(messagePrompts);
 
-        var client = GetClient();
+        var client = GetClient(translationOptions.Model);
 
-        var result = await client.GetChatCompletionsAsync(translationOptions.Model, chatOptions);
-        
-        return result.Value.Choices.Select(x => x.Message.Content).ToList();    
+        var result = await client.CompleteChatAsync(messages,chatOptions);
+
+        return result.Value.Content.Select(x => x.Text).ToList();
     }
 
     private ChatCompletionsOptions LoadCompletionsOptions()
@@ -141,22 +134,22 @@ public class AzureOpenAiService: IOpenAiTranslationService
         };
     }
 
-    private ChatCompletionsOptions DefaultChatCompletionOptions(ChatCompletionsOptions options)
+    private ChatCompletionOptions DefaultChatCompletionOptions(ChatCompletionsOptions options)
     {
-        return new ChatCompletionsOptions
+        return new ChatCompletionOptions
         {
             FrequencyPenalty = options?.FrequencyPenalty ?? 0.0f,
-            MaxTokens = options?.MaxTokens ?? 500,
+            MaxOutputTokenCount = options?.MaxTokens ?? 500,
             Temperature = options?.Temperature ?? 0f,
-            NucleusSamplingFactor = options?.NucleusSamplingFactor ?? -1,
+            TopP = options?.NucleusSamplingFactor ?? -1,
             PresencePenalty = options?.PresencePenalty ?? -0.0f,
         };
     }
     #endregion
-     
+
     private bool IsLegacyModel(string model)
         => OpenAIConstants.BaseModels.InvariantContains(model) ||
-            OpenAIConstants.LegacyModels.InvariantContains(model); 
+            OpenAIConstants.LegacyModels.InvariantContains(model);
 
 
 }
