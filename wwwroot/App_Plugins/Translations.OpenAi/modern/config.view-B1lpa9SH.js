@@ -1,6 +1,6 @@
-import { TranslationConnectorConfigElementBase as y, JUMOO_TM_CONNECTOR_SETTINGS_CONTEXT as h } from "@jumoo/translate";
-import { html as i, css as m, customElement as b } from "@umbraco-cms/backoffice/external/lit";
-import { c as p } from "./index-Dp2j7DRs.js";
+import { TranslationConnectorConfigElementBase as m, JUMOO_TM_CONNECTOR_SETTINGS_CONTEXT as y } from "@jumoo/translate";
+import { html as i, css as h, customElement as b } from "@umbraco-cms/backoffice/external/lit";
+import { c as p } from "./index-DgUc52T8.js";
 class v {
   static openAiTranslateModels(t) {
     return ((t == null ? void 0 : t.client) ?? p).get({
@@ -22,9 +22,9 @@ var g = Object.defineProperty, f = Object.getOwnPropertyDescriptor, d = (e) => {
     (s = e[u]) && (r = (a ? s(t, n, r) : s(r)) || r);
   return a && r && g(t, n, r), r;
 }, c = (e, t, n) => t.has(e) || d("Cannot " + n), T = (e, t, n) => (c(e, t, "read from private field"), t.get(e)), $ = (e, t, n) => t.has(e) ? d("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, n), O = (e, t, n, a) => (c(e, t, "write to private field"), t.set(e, n), n), o;
-let l = class extends y {
+let l = class extends m {
   constructor() {
-    super(), $(this, o), this.consumeContext(h, (e) => {
+    super(), $(this, o), this.consumeContext(y, (e) => {
       O(this, o, e), console.debug(T(this, o));
     });
   }
@@ -43,16 +43,20 @@ let l = class extends y {
               supply an API Key.
             </p>
           </uui-box>
-          <uui-box headline="OpenAi Translatation Api">
+          <jumoo-tm-ui-box headline="OpenAi Translatation Api">
             ${this.renderApiKey()} ${this.renderThrottle()}
             ${this.renderSplitOption()} ${this.renderSendAsHtmlOption()}
-          </uui-box>
-          <uui-box>
+          </jumoo-tm-ui-box>
+          <jumoo-tm-ui-box
+            headline="Advanced Settings"
+            .collapsable=${!0}
+            .expanded=${!1}
+          >
             ${this.renderService()}
             ${this.renderModel()}${this.renderMaxTokens()}
             ${this.renderTemperature()}${this.renderFrequencyPenalty()}
             ${this.renderPresencePenalty()}${this.renderNucleusSamplingFactor()}
-          </uui-box>
+          </jumoo-tm-ui-box>
         </div>
       </div>
     </umb-body-layout>`;
@@ -252,7 +256,7 @@ let l = class extends y {
   }
 };
 o = /* @__PURE__ */ new WeakMap();
-l.styles = m`
+l.styles = h`
     .layout {
       display: flex;
       gap: var(--uui-size-space-5);
@@ -293,4 +297,4 @@ export {
   l as TranslationOpenAiConnectorConfigElement,
   w as default
 };
-//# sourceMappingURL=config.view-CjhFxEX0.js.map
+//# sourceMappingURL=config.view-B1lpa9SH.js.map

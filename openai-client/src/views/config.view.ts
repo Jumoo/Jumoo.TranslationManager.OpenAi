@@ -40,16 +40,20 @@ export class TranslationOpenAiConnectorConfigElement
               supply an API Key.
             </p>
           </uui-box>
-          <uui-box headline="OpenAi Translatation Api">
+          <jumoo-tm-ui-box headline="OpenAi Translatation Api">
             ${this.renderApiKey()} ${this.renderThrottle()}
             ${this.renderSplitOption()} ${this.renderSendAsHtmlOption()}
-          </uui-box>
-          <uui-box>
+          </jumoo-tm-ui-box>
+          <jumoo-tm-ui-box
+            headline="Advanced Settings"
+            .collapsable=${true}
+            .expanded=${false}
+          >
             ${this.renderService()}
             ${this.renderModel()}${this.renderMaxTokens()}
             ${this.renderTemperature()}${this.renderFrequencyPenalty()}
             ${this.renderPresencePenalty()}${this.renderNucleusSamplingFactor()}
-          </uui-box>
+          </jumoo-tm-ui-box>
         </div>
       </div>
     </umb-body-layout>`;

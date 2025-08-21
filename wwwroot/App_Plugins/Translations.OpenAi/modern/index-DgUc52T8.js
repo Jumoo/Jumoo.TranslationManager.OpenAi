@@ -16,13 +16,13 @@ const _ = {
   alias: "jumoo-openai-config",
   name: "OpenAi Connector Config",
   elementName: "jumoo-openai-config",
-  js: () => import("./config.view-CjhFxEX0.js")
+  js: () => import("./config.view-B1lpa9SH.js")
 }, z = {
   type: "jumoo-tm-connector-pending",
   alias: "jumoo-openai-pending",
   name: "OpenAi Connector Pending",
   elementName: "jumoo-openai-pending",
-  js: () => import("./pending.view-FUF8RnnC.js")
+  js: () => import("./pending.view-oDDo5Ze7.js")
 }, W = [E, z], I = {
   type: "icons",
   alias: "jumoo.tm.icons.openai",
@@ -267,4 +267,4 @@ export {
   O as c,
   ee as o
 };
-//# sourceMappingURL=index-Dp2j7DRs.js.map
+//# sourceMappingURL=index-DgUc52T8.js.map

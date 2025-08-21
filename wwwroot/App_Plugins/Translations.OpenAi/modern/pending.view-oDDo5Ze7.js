@@ -1,15 +1,15 @@
 import { TranslationConnectorPendingElementBase as d } from "@jumoo/translate";
-import { html as c, css as r, customElement as u } from "@umbraco-cms/backoffice/external/lit";
-var o = Object.defineProperty, p = Object.getOwnPropertyDescriptor, m = (e, i, t, a) => {
-  for (var l = a > 1 ? void 0 : a ? p(i, t) : i, n = e.length - 1, v; n >= 0; n--)
-    (v = e[n]) && (l = (a ? v(i, t, l) : v(l)) || l);
-  return a && l && o(i, t, l), l;
+import { html as c, css as o, customElement as r } from "@umbraco-cms/backoffice/external/lit";
+var u = Object.defineProperty, p = Object.getOwnPropertyDescriptor, m = (e, i, s, a) => {
+  for (var l = a > 1 ? void 0 : a ? p(i, s) : i, n = e.length - 1, v; n >= 0; n--)
+    (v = e[n]) && (l = (a ? v(i, s, l) : v(l)) || l);
+  return a && l && u(i, s, l), l;
 };
-let s = class extends d {
+let t = class extends d {
   render() {
     var i;
     const e = (i = this.connector) == null ? void 0 : i.settings;
-    return c`<uui-box>
+    return c`<jumoo-tm-ui-box headline="Settings">
       <div class="setting">
         <div class="title">Model</div>
         <div class="value">${(e == null ? void 0 : e.model) ?? "text-davinci-003"}</div>
@@ -34,10 +34,10 @@ let s = class extends d {
         <div class="title">Nucleus Sampling</div>
         <div class="value">${(e == null ? void 0 : e.nucleusSampling) ?? "1"}</div>
       </div>
-    </uui-box>`;
+    </jumoo-tm-ui-box>`;
   }
 };
-s.styles = r`
+t.styles = o`
     uui-box {
       --uui-box-default-padding: var(--uui-size-space-2) var(--uui-size-space-5);
     }
@@ -62,12 +62,12 @@ s.styles = r`
       font-style: italic;
     }
   `;
-s = m([
-  u("jumoo-openai-pending")
-], s);
-const P = s;
+t = m([
+  r("jumoo-openai-pending")
+], t);
+const P = t;
 export {
-  s as TranslationOpenAiConnectorPendingElement,
+  t as TranslationOpenAiConnectorPendingElement,
   P as default
 };
-//# sourceMappingURL=pending.view-FUF8RnnC.js.map
+//# sourceMappingURL=pending.view-oDDo5Ze7.js.map

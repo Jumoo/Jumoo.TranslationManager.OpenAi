@@ -20,7 +20,7 @@ export class TranslationOpenAiConnectorPendingElement
 {
   render() {
     const settings = this.connector?.settings as openAiSettings;
-    return html`<uui-box>
+    return html`<jumoo-tm-ui-box headline="Settings">
       <div class="setting">
         <div class="title">Model</div>
         <div class="value">${settings?.model ?? "text-davinci-003"}</div>
@@ -45,7 +45,7 @@ export class TranslationOpenAiConnectorPendingElement
         <div class="title">Nucleus Sampling</div>
         <div class="value">${settings?.nucleusSampling ?? "1"}</div>
       </div>
-    </uui-box>`;
+    </jumoo-tm-ui-box>`;
   }
   static styles = css`
     uui-box {
