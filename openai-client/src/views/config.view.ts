@@ -49,7 +49,7 @@ export class TranslationOpenAiConnectorConfigElement
             .collapsable=${true}
             .expanded=${false}
           >
-            ${this.renderService()}
+            <!--${this.renderService()}-->
             ${this.renderModel()}${this.renderMaxTokens()}
             ${this.renderTemperature()}${this.renderFrequencyPenalty()}
             ${this.renderPresencePenalty()}${this.renderNucleusSamplingFactor()}
