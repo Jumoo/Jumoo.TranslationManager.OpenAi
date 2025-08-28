@@ -63,14 +63,6 @@
                         </small>
                     </div>
 
-                    <umb-control-group label="@openAi_service" description="@openAi_service-desc">
-
-                        <select ng-model="vm.settings.service"
-                                ng-options="service for service in pvm.services"
-                                class="umb-dropdown umb-property-editor"></select>
-
-                    </umb-control-group>
-
                     <umb-control-group label="@openAi_model" description="@openAi_model-desc">
                         <input type="text" ng-model="vm.settings.model" class="umb-property-editor umb-textstring textstring"
                                placeholder="text-davinci-003" />

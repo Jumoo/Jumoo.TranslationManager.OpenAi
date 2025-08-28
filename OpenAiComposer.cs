@@ -38,7 +38,6 @@ internal class OpenAiComposer : IComposer
     {
         builder.Services.AddSingleton<OpenAIConfigurationService>();
 
-        builder.Services.AddSingleton<IOpenAiTranslationService, AzureOpenAiService>();
         builder.Services.AddSingleton<IOpenAiTranslationService, BetalgoOpenAiService>();
 
         // so we can swap services out. 
