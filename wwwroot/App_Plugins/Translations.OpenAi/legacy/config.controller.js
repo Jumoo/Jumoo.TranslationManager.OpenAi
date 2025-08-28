@@ -49,7 +49,7 @@
             }
 
             if (newValue.model === undefined) {
-                newValue.model = 'gpt-3.5-turbo-instruct';
+                newValue.model = 'gpt-4o';
             }
 
             if (newValue.maxTokens === undefined) {

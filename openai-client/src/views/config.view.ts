@@ -158,7 +158,7 @@ export class TranslationOpenAiConnectorConfigElement
         <uui-input
           id="model"
           label="Model"
-          value=${(this.settings?.model as string) ?? "gpt-3.5-turbo-instruct"}
+          value=${(this.settings?.model as string) ?? "gpt-4o"}
           @change=${this.onUpdateOption}
         >
         </uui-input>
