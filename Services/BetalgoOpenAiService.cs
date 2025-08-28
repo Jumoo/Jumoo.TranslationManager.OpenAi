@@ -116,7 +116,7 @@ internal class BetalgoOpenAiService : IOpenAiTranslationService
         return new CompletionCreateRequest
         {
             MaxTokens = _configurationService.GetConfigValue("maxTokens", 500),
-            Temperature = _configurationService.GetConfigValue("temperature", 0f),
+            Temperature = _configurationService.GetConfigValue("temperature", 1f),
             FrequencyPenalty = _configurationService.GetConfigValue("frequencyPenalty", 0.0f),
             PresencePenalty = _configurationService.GetConfigValue("presencePenalty", 0.0f),
         };
@@ -126,8 +126,9 @@ internal class BetalgoOpenAiService : IOpenAiTranslationService
     {
         return new ChatCompletionCreateRequest
         {
-            MaxTokens = _configurationService.GetConfigValue("maxTokens", 500),
-            Temperature = _configurationService.GetConfigValue("temperature", 0f),
+            MaxCompletionTokens = _configurationService.GetConfigValue("maxTokens", 500),
+            // MaxTokens = _configurationService.GetConfigValue("maxTokens", 500),
+            Temperature = _configurationService.GetConfigValue("temperature", 1f),
             FrequencyPenalty = _configurationService.GetConfigValue("frequencyPenalty", 0.0f),
             PresencePenalty = _configurationService.GetConfigValue("presencePenalty", 0.0f),
         };

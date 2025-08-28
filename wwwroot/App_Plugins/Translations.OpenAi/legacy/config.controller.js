@@ -57,7 +57,7 @@
             }
 
             if (newValue.temperature === undefined) {
-                newValue.temperature = 0;
+                newValue.temperature = 1;
             }
 
             if (newValue.frequencyPenalty === undefined) {
