@@ -5,7 +5,6 @@ import {
   TranslationConnectorSettingsContext,
 } from "@jumoo/translate";
 import { css, customElement, html } from "@umbraco-cms/backoffice/external/lit";
-import { OpenAiTranslate } from "../api";
 
 @customElement("jumoo-openai-config")
 export class TranslationOpenAiConnectorConfigElement
@@ -25,9 +24,6 @@ export class TranslationOpenAiConnectorConfigElement
 
   async connectedCallback() {
     super.connectedCallback();
-
-    const models = await OpenAiTranslate.openAiTranslateModels();
-    console.log(models);
   }
 
   render() {
