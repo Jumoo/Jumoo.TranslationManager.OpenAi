@@ -50,6 +50,14 @@ export class TranslationOpenAiConnectorConfigElement
             ${this.renderTemperature()}${this.renderFrequencyPenalty()}
             ${this.renderPresencePenalty()}${this.renderNucleusSamplingFactor()}
           </jumoo-tm-ui-box>
+
+          <jumoo-tm-ui-box
+            headline="Prompt"
+            .collapsable=${true}
+            .expanded=${false}
+          >
+            ${this.renderSystemPrompt()} ${this.renderPrompt()}</jumoo-tm-ui-box
+          >
         </div>
       </div>
     </umb-body-layout>`;
@@ -252,10 +260,48 @@ export class TranslationOpenAiConnectorConfigElement
     </umb-property-layout>`;
   }
 
+  renderPrompt() {
+    return html` <umb-property-layout
+      label="Prompt"
+      description="Prompt to use when sending text to translation"
+      ><div slot="editor">
+        <uui-textarea
+          id="prompt"
+          label="Prompt"
+          .value=${(this.settings?.prompt as string) ??
+          "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}. If you cannot translate something, leave it as it is. Translate all the text below: \n\r{text}"}
+          @change=${this.onUpdateOption}
+          rows="5"
+        ></uui-textarea>
+      </div>
+    </umb-property-layout>`;
+  }
+
+  renderSystemPrompt() {
+    return html` <umb-property-layout
+      label="System Prompt"
+      description="System prompt to use when sending text to translation"
+      ><div slot="editor">
+        <uui-textarea
+          id="systemPrompt"
+          label="system Prompt"
+          .value=${(this.settings?.systemPrompt as string) ?? ""}
+          @change=${this.onUpdateOption}
+          rows="5"
+        ></uui-textarea>
+      </div>
+    </umb-property-layout>`;
+  }
+
   static styles = css`
     .layout {
       display: flex;
       gap: var(--uui-size-space-5);
+    }
+
+    jumoo-tm-ui-box,
+    uui-box {
+      --uui-box-default-padding: 0 var(--uui-size-space-5);
     }
 
     .left,
