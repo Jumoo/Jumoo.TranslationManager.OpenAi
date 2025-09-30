@@ -1,30 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jumoo.TranslationManager.Core.Boot;
+
 using Jumoo.TranslationManager.Core.Models;
+using Jumoo.TranslationManager.OpenAi.Services;
+
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+
+using Umbraco.Extensions;
+using Umbraco.Cms.Core.Composing;
+using Umbraco.Cms.Core.DependencyInjection;
+using Umbraco.Cms.Core.Manifest;
+using Umbraco.Cms.Core.Routing;
+
+using Jumoo.TranslationManager.Core.Boot;
 
 #if UMB_15_OR_GREATER
 using Umbraco.Cms.Infrastructure.Manifest;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.OpenApi.Models;
-#else
-using Jumoo.TranslationManager.OpenAi.Controllers;
 #endif
-using Jumoo.TranslationManager.OpenAi.Services;
-
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-
-using Umbraco.Cms.Core.Composing;
-using Umbraco.Cms.Core.DependencyInjection;
-using Umbraco.Cms.Core.Events;
-using Umbraco.Cms.Core.Manifest;
-using Umbraco.Cms.Core.Notifications;
-using Umbraco.Cms.Core.Routing;
-using Umbraco.Extensions;
-using Microsoft.Extensions.Options;
-
 
 namespace Jumoo.TranslationManager.OpenAi;
 
@@ -48,8 +44,6 @@ internal class OpenAiComposer : IComposer
 #else
         if (!builder.ManifestFilters().Has<OpenAiConnectorManifestFilter>())
             builder.ManifestFilters().Append<OpenAiConnectorManifestFilter>();
-
-        builder.AddNotificationHandler<ServerVariablesParsingNotification, OpenAiServerVariablesParserHandler>();
 #endif
     }
 }
@@ -89,9 +83,6 @@ internal class ConfigureSwaggerGenOptions : IConfigureOptions<SwaggerGenOptions>
 
     }
 }
-
-
-
 #else
 internal class OpenAiConnectorManifestFilter : IManifestFilter
 {
@@ -105,30 +96,10 @@ internal class OpenAiConnectorManifestFilter : IManifestFilter
             PackageName = OpenAiConnector.ConnectorName,
             AllowPackageTelemetry = true,
             Version = OpenAiConnector.ConnectorVersion,
-            Scripts = new[]
-            {
-                WebPath.Combine(OpenAiConnector.ConnectorPluginPath, "config.controller.js"),
-                WebPath.Combine(OpenAiConnector.ConnectorPluginPath, "openAi.service.js")
-            }
-        });
-    }
-}
-
-public class OpenAiServerVariablesParserHandler :
-    INotificationHandler<ServerVariablesParsingNotification>
-{
-    private readonly LinkGenerator _linkGenerator;
-
-    public OpenAiServerVariablesParserHandler(LinkGenerator linkGenerator)
-    {
-        _linkGenerator = linkGenerator;
-    }
-
-    public void Handle(ServerVariablesParsingNotification notification)
-    {
-        notification.ServerVariables.Add("openAiTranslations", new Dictionary<string, object>
-        {
-            { "service", _linkGenerator.GetUmbracoApiServiceBaseUrl<OpenAiController>(x => x.GetApi()) }
+            Scripts =
+            [
+                WebPath.Combine(OpenAiConnector.ConnectorPluginPath, "config.controller.js")
+            ]
         });
     }
 }
