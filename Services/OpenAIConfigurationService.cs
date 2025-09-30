@@ -27,5 +27,5 @@ public class OpenAIConfigurationService
 
 
     public TObject GetConfigValue<TObject>(string key, TObject defaultValue)
-        => _configService.GetProviderSetting(OpenAiConnector.ConnectorAlias, "ApiKey", defaultValue);
+        => _configService.GetProviderSetting(OpenAiConnector.ConnectorAlias, key, defaultValue);
 }

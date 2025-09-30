@@ -46,7 +46,7 @@ export class TranslationOpenAiConnectorConfigElement
             .expanded=${false}
           >
             <!--${this.renderService()}-->
-            ${this.renderModel()}${this.renderMaxTokens()}
+            ${this.renderModel()} ${this.renderSeed()} ${this.renderMaxTokens()}
             ${this.renderTemperature()}${this.renderFrequencyPenalty()}
             ${this.renderPresencePenalty()}${this.renderNucleusSamplingFactor()}
           </jumoo-tm-ui-box>
@@ -56,7 +56,7 @@ export class TranslationOpenAiConnectorConfigElement
             .collapsable=${true}
             .expanded=${false}
           >
-            ${this.renderSystemPrompt()} ${this.renderPrompt()}</jumoo-tm-ui-box
+            ${this.renderSystemPrompt()}</jumoo-tm-ui-box
           >
         </div>
       </div>
@@ -170,6 +170,24 @@ export class TranslationOpenAiConnectorConfigElement
     </umb-property-layout>`;
   }
 
+  renderSeed() {
+    return html`<umb-property-layout
+      label="Seed"
+      description="An optional seed value to initialize the random number generator"
+    >
+      <div slot="editor">
+        <uui-input
+          id="seed"
+          label="Seed"
+          type="number"
+          value=${(this.settings?.seed as number) ?? 1024}
+          @change=${this.onUpdateOption}
+        >
+        </uui-input>
+      </div>
+    </umb-property-layout>`;
+  }
+
   renderMaxTokens() {
     return html`<umb-property-layout
       label="Max Tokens"
@@ -260,23 +278,6 @@ export class TranslationOpenAiConnectorConfigElement
     </umb-property-layout>`;
   }
 
-  renderPrompt() {
-    return html` <umb-property-layout
-      label="Prompt"
-      description="Prompt to use when sending text to translation"
-      ><div slot="editor">
-        <uui-textarea
-          id="prompt"
-          label="Prompt"
-          .value=${(this.settings?.prompt as string) ??
-          "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}. If you cannot translate something, leave it as it is. Translate all the text below: \n\r{text}"}
-          @change=${this.onUpdateOption}
-          rows="5"
-        ></uui-textarea>
-      </div>
-    </umb-property-layout>`;
-  }
-
   renderSystemPrompt() {
     return html` <umb-property-layout
       label="System Prompt"
@@ -285,7 +286,8 @@ export class TranslationOpenAiConnectorConfigElement
         <uui-textarea
           id="systemPrompt"
           label="system Prompt"
-          .value=${(this.settings?.systemPrompt as string) ?? ""}
+          .value=${(this.settings?.systemPrompt as string) ??
+          "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}"}
           @change=${this.onUpdateOption}
           rows="5"
         ></uui-textarea>

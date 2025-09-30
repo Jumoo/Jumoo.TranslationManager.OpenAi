@@ -42,12 +42,7 @@
 				<pre>%1%</pre>
 				<p>and then send the translation text as a user request.</p>
 
-				<h5>'base' or 'legacy' prompt</h5>
-				<p>For 'base' or legacy' models the connector will send the following prompt to the api:</p>
-				<pre>%0%</pre>
-
-				<p>The exact number of tokens, and usage will be determained be the OpenApi settings
-				you are using to perform the translation.</p>
+				<p>The exact number of tokens, and usage will be determained be the OpenApi settings you are using to perform the translation.</p>
 		]]></key>
 
 
@@ -60,6 +55,9 @@
 				<a href="https://platform.openai.com/docs/introduction" target="_blank">OpenAi documentation</a> for more information.
 			]]>
 		</key>
+
+		<key alias="seed">Seed</key>
+		<key alias="seed-desc">Random seed value for all AI prompts.</key>
 
 		<key alias="maxTokens">Max Tokens</key>
 		<key alias="maxTokens-desc">The maximum number of tokens to generate in the completion.</key>

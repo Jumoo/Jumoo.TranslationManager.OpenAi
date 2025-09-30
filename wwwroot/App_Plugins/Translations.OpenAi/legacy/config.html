@@ -71,6 +71,12 @@
                         </div>
                     </umb-control-group>
 
+
+                    <umb-control-group label="@openAi_seed" description="@openAi_seed-desc">
+                        <input type="number" ng-model="vm.settings.seed" step="1" class="umb-property-editor umb-textstring textstring"
+                               placeholder="1024" />
+                    </umb-control-group>
+
                     <umb-control-group label="@openAi_maxTokens" description="@openAi_maxTokens-desc">
                         <input type="number" ng-model="vm.settings.maxTokens" class="umb-property-editor umb-textstring textstring"
                                placeholder="500" />
@@ -115,24 +121,6 @@
                                   ng-model="vm.settings.systemPrompt" class="umb-property-editor"></textarea>
                     </umb-control-group>
                 </umb-box-content>
-
-                <umb-box-content ng-show="pvm.showPrompt">
-                    <div class="mb2">
-                        <h4>Legacy Prompt</h4>
-                        <small>The prompt to use on 'base' or 'legacy' API calls</small>
-                    </div>
-
-                    <umb-control-group label="@openAi_promptLabel"
-                                       description="@openAi_promptLabelDesc">
-                        <textarea rows="5"
-                                  ng-model="vm.settings.prompt" class="umb-property-editor"></textarea>
-                    </umb-control-group>
-                    <umb-control-group label="Example"
-                                       description="Example of what will be sent to the OpenAI">
-                        <pre>{{pvm.samplePrompt}}</pre>
-                    </umb-control-group>
-                </umb-box-content>
-
             </umb-box>
         </div>
 

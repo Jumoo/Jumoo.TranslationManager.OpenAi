@@ -49,25 +49,13 @@ internal class BetalgoOpenAiService : IOpenAiTranslationService
 
     public async Task<IEnumerable<string>> Translate(List<string> text, OpenAITranslationOptions translationOptions)
     {
-        if (OpenAIConstants.LegacyModels.Contains(translationOptions.Model)
-            || OpenAIConstants.BaseModels.Contains(translationOptions.Model))
-        {
-            return await TranslateLegacy(text, translationOptions);
-        }
-
-        return await TranslateLatest(text, translationOptions);
-    }
-
-    private async Task<IEnumerable<string>> TranslateLatest(List<string> text, OpenAITranslationOptions translationOptions)
-    {
-
         var request = LoadChatCompletionCreateRequestOptions();
 
         request.Messages = new List<ChatMessage> {
             ChatMessage.FromSystem(translationOptions.GetSystemPrompt())
             };
         request.Model = translationOptions.Model;
-
+        
         var sourceContent = text
             .Where(x => x is not null)
             .Select(x => ChatMessage.FromUser(x)) ?? Enumerable.Empty<ChatMessage>();
@@ -87,50 +75,17 @@ internal class BetalgoOpenAiService : IOpenAiTranslationService
 
     }
 
-    private async Task<IEnumerable<string>> TranslateLegacy(List<string> text, OpenAITranslationOptions translationOptions)
-    {
-        var request = LoadCompletionCreateRequestOptions();
-        request.Model = translationOptions.Model;
-        request.PromptAsList = new List<string>();
-
-
-        foreach (var item in text.Where(x => x is not null))
-        {
-            var promptText = translationOptions.GetPrompt(item);
-
-            if (string.IsNullOrWhiteSpace(promptText) is true) continue;
-            request.PromptAsList.Add(promptText);
-        }
-
-        var service = GetClient();
-        var result = await service?.Completions?.CreateCompletion(request);
-
-        if (!result.Successful)
-            throw new InvalidOperationException(result.Error.Message);
-
-        return result.Choices.Select(x => x.Text);
-    }
-
-    private CompletionCreateRequest LoadCompletionCreateRequestOptions()
-    {
-        return new CompletionCreateRequest
-        {
-            MaxTokens = _configurationService.GetConfigValue("maxTokens", 500),
-            Temperature = _configurationService.GetConfigValue("temperature", 1f),
-            FrequencyPenalty = _configurationService.GetConfigValue("frequencyPenalty", 0.0f),
-            PresencePenalty = _configurationService.GetConfigValue("presencePenalty", 0.0f),
-        };
-    }
-
     private ChatCompletionCreateRequest LoadChatCompletionCreateRequestOptions()
     {
         return new ChatCompletionCreateRequest
         {
             MaxCompletionTokens = _configurationService.GetConfigValue("maxTokens", 500),
+            // You can't set max tokens and MaxCompletionTokens at the same time.
             // MaxTokens = _configurationService.GetConfigValue("maxTokens", 500),
             Temperature = _configurationService.GetConfigValue("temperature", 1f),
             FrequencyPenalty = _configurationService.GetConfigValue("frequencyPenalty", 0.0f),
             PresencePenalty = _configurationService.GetConfigValue("presencePenalty", 0.0f),
+            Seed = _configurationService.GetConfigValue("seed", 1024),
         };
     }
 }

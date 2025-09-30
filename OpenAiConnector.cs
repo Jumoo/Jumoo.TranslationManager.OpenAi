@@ -15,7 +15,6 @@ using Jumoo.TranslationManager.OpenAi.Models;
 using Jumoo.TranslationManager.OpenAi.Services;
 using Jumoo.TranslationManager.Utilities;
 
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 using Umbraco.Cms.Core;
@@ -34,11 +33,11 @@ public class OpenAiConnector : ITranslationProvider
     public static string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/legacy/";
 #endif
 
-
+    
     private readonly TranslationConfigService _configService;
     private readonly ILogger<OpenAiConnector> _logger;
 
-
+    
     private readonly OpenAIServiceFactory _openAIServiceFactory;
     private IOpenAiTranslationService _openAiService;
 
@@ -106,8 +105,6 @@ public class OpenAiConnector : ITranslationProvider
 
                         _logger.LogDebug("Translation: {nodeId} {group} {property}",
                             node.MasterNodeId, group, property);
-
-
 
                         var result = await GetTranslatedValue(
                             property.Source, property.Target, sourceLang, targetLang);
@@ -197,7 +194,9 @@ public class OpenAiConnector : ITranslationProvider
     /// </summary>
     private async Task<string> TranslateHtmlValue(string source, string sourceLang, string targetLang)
     {
-        if (!IsHtml(source))
+        // if this is not html or the whole html is less than the split length, don't split it.
+        // its simpler for AI to deal with the whole chunk of html.
+        if (!IsHtml(source) || source.Length < _splitLength)
             return await TranslateStringValue(source, sourceLang, targetLang);
 
         var doc = new HtmlDocument();
@@ -219,7 +218,7 @@ public class OpenAiConnector : ITranslationProvider
             var value = node.OuterHtml;
             if (!string.IsNullOrWhiteSpace(value))
             {
-                if (value.Length > 5000)
+                if (value.Length > _splitLength)
                 {
                     if (node.HasChildNodes)
                     {
@@ -239,14 +238,14 @@ public class OpenAiConnector : ITranslationProvider
                     }
                     else
                     {
-                        _logger.LogWarning("Splitting single html element that spans more than 5000 charecters. " +
-                            "This is larger than the request limit, splitting may result in some issues with translation.");
+                        _logger.LogWarning("Splitting single html element that spans more than {length} characters." +
+                            "This is larger than the request limit, splitting may result in some issues with translation.", _splitLength);
 
                         // we attempt to split the tag, we also wrap it in the nodeName, to make it fit
                         var innerValue = node.InnerHtml;
 
                         // take the tag name and the braces (< > < / > ) from the 5000 budget. 
-                        var size = 4995 - (node.Name.Length * 2);
+                        var size = _splitLength - 5 - (node.Name.Length * 2);
                         values.AddRange(Split(innerValue, size, node.Name));
                     }
                 }
@@ -265,13 +264,15 @@ public class OpenAiConnector : ITranslationProvider
         return result;
     }
 
+    private int _splitLength = 10000;
+
     /// <summary>
     ///  translates a string using the api, we assume the string isn't anything
     ///  fancy, and if it's super long, we just hard split it at 5000 chars
     /// </summary>
     private async Task<string> TranslateStringValue(string source, string sourceLang, string targetLang)
     {
-        var values = Split(source, 5000);
+        var values = Split(source, _splitLength);
         return await TranslateStringValues(values, sourceLang, targetLang, false);
     }
 
@@ -283,7 +284,7 @@ public class OpenAiConnector : ITranslationProvider
         while (pos < values.Count && block.Count < 25)
         {
             length += values[pos].Length;
-            if (length < 5000)
+            if (length <= _splitLength + 1000)
             {
                 block.Add(values[pos]);
             }
