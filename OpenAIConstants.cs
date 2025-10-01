@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Jumoo.TranslationManager.Utilities;
+
+using Org.BouncyCastle.Bcpg.Sig;
+
+using System;
 
 namespace Jumoo.TranslationManager.OpenAi;
 
@@ -8,6 +12,16 @@ public static class OpenAIConstants
     public const string DefaultPrompt = "translate this {sourceLang} {textType} into to {targetLang}\n\n{text}\n";
     public const string DefaultSystemPrompt = "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}";
     public const string DefaultModel = "gpt-4o";
+
+#if UMB_14_OR_GREATER
+    public const string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/modern/";
+    public const string ConfigViewPath = "jumoo-openai-config";
+    public const string PendingViewPath = "jumoo-openai-pending";
+#else
+    public const string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/legacy/";
+    public static string ConfigViewPath = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "config.html");
+    public static string PendingViewPath = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "pending.html");
+#endif
 
 
     public static string[] BaseModels = new[] {

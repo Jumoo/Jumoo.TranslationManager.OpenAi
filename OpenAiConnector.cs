@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 
 using Jumoo.TranslationManager.Core;
 using Jumoo.TranslationManager.Core.Configuration;
-
 using Jumoo.TranslationManager.Core.Models;
 using Jumoo.TranslationManager.Core.Providers;
 using Jumoo.TranslationManager.OpenAi.Models;
 using Jumoo.TranslationManager.OpenAi.Services;
-using Jumoo.TranslationManager.Utilities;
 
 using Microsoft.Extensions.Logging;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 using Umbraco.Cms.Core;
 using Umbraco.Extensions;
@@ -27,13 +25,10 @@ public class OpenAiConnector : ITranslationProvider
     public static string ConnectorName = "OpenAi Connector";
     public static string ConnectorAlias = "openAiConnector";
     public static string ConnectorVersion = typeof(OpenAiConnector).Assembly.GetName().Version.ToString(3);
-#if UMB_14_OR_GREATER
-    public static string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/modern/";
-#else
-    public static string ConnectorPluginPath = "/App_Plugins/Translations.OpenAi/legacy/";
-#endif
+    public static string ConnectorPluginPath = OpenAIConstants.ConnectorPluginPath;
 
-    
+    private readonly OpenAIMessageService _messageService;
+
     private readonly TranslationConfigService _configService;
     private readonly ILogger<OpenAiConnector> _logger;
 
@@ -57,25 +52,21 @@ public class OpenAiConnector : ITranslationProvider
     public OpenAiConnector(
         TranslationConfigService configService,
         ILogger<OpenAiConnector> logger,
-        OpenAIServiceFactory openAIServiceFactory)
+        OpenAIServiceFactory openAIServiceFactory,
+        OpenAIMessageService messageService)
     {
-
         // defaults. 
         _configService = configService;
         _logger = logger;
         _openAIServiceFactory = openAIServiceFactory;
         Reload();
+        _messageService = messageService;
     }
 
     public TranslationProviderViews Views => new TranslationProviderViews()
     {
-#if UMB_14_OR_GREATER
-        Config = "jumoo-openai-config",
-        Pending = "jumoo-openai-pending"
-#else
-        Config = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "config.html"),
-        Pending = TranslateUriUtility.ToAbsolute(ConnectorPluginPath + "pending.html")
-#endif
+        Config = OpenAIConstants.ConfigViewPath,
+        Pending = OpenAIConstants.PendingViewPath
     };
 
     public async Task<Attempt<TranslationJob>> Submit(TranslationJob job)
@@ -91,7 +82,9 @@ public class OpenAiConnector : ITranslationProvider
             _logger.LogDebug("Submitting translations via OpenApi");
 
             int count = 0;
-
+            
+            // guessing how many properties we have to do.
+            decimal total = job.Nodes.Count * 5;
 
             foreach (var node in job.Nodes)
             {
@@ -105,6 +98,10 @@ public class OpenAiConnector : ITranslationProvider
 
                         _logger.LogDebug("Translation: {nodeId} {group} {property}",
                             node.MasterNodeId, group, property);
+
+                        await _messageService.SendUpdateAsync(
+                            "Translating",
+                            $"{property.Alias}", (count/total)*100, string.Empty);
 
                         var result = await GetTranslatedValue(
                             property.Source, property.Target, sourceLang, targetLang);
@@ -123,9 +120,7 @@ public class OpenAiConnector : ITranslationProvider
             }
 
             job.Status = JobStatus.Received;
-#if NET7_0_OR_GREATER
             job.ProviderStatus = "Translated via OpenAI";
-#endif
             return Attempt.Succeed(job);
         }
         catch(Exception exception)

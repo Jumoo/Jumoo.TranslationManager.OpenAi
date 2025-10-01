@@ -32,6 +32,7 @@ internal class OpenAiComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
+        builder.Services.AddSingleton<OpenAIMessageService>();
         builder.Services.AddSingleton<OpenAIConfigurationService>();
 
         builder.Services.AddSingleton<IOpenAiTranslationService, BetalgoOpenAiService>();

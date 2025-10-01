@@ -38,9 +38,10 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains(UMB_16_ONLY))">
-		<PackageReference Include="Jumoo.TranslationManager.Core" Version="16.0.0" />
-		<PackageReference Include="Jumoo.TranslationManager.Serializers" Version="16.0.0" />
-		<PackageReference Include="Umbraco.Cms.Api.Management" Version="16.0.0" />
+		<PackageReference Include="Jumoo.TranslationManager.Core" Version="16.1.0" />
+		<PackageReference Include="Jumoo.TranslationManager.Serializers" Version="16.1.0" />
+		<PackageReference Include="Jumoo.TranslationManager.Connectors" Version="16.1.0" />
+		<PackageReference Include="Umbraco.Cms.Api.Management" Version="16.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
