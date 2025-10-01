@@ -84,7 +84,7 @@ public class OpenAiConnector : ITranslationProvider
             int count = 0;
             
             // guessing how many properties we have to do.
-            decimal total = job.Nodes.Count * 5;
+            decimal total = job.Nodes.SelectMany(x => x.Groups).Sum(x => x.Properties.Count);
 
             foreach (var node in job.Nodes)
             {
@@ -99,9 +99,10 @@ public class OpenAiConnector : ITranslationProvider
                         _logger.LogDebug("Translation: {nodeId} {group} {property}",
                             node.MasterNodeId, group, property);
 
+                        var progress = (count / total) * 100;
                         await _messageService.SendUpdateAsync(
                             "Translating",
-                            $"{property.Alias}", (count/total)*100, string.Empty);
+                            $"{group.Name} - {property.Alias} [{progress}]", progress , string.Empty);
 
                         var result = await GetTranslatedValue(
                             property.Source, property.Target, sourceLang, targetLang);
