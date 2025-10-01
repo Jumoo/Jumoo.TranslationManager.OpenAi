@@ -287,7 +287,7 @@ export class TranslationOpenAiConnectorConfigElement
           id="systemPrompt"
           label="system Prompt"
           .value=${(this.settings?.systemPrompt as string) ??
-          "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}"}
+          "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}, if you can not translate something return the value you were given."}
           @change=${this.onUpdateOption}
           rows="5"
         ></uui-textarea>

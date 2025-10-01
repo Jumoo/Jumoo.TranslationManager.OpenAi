@@ -1,15 +1,10 @@
-﻿
-#if UMB_16_OR_GREATER
+﻿#if UMB_16_OR_GREATER
 using Jumoo.Processing.Core.Communication;
 #else
 using Jumoo.TranslationManager.Core.Hubs;
 using Microsoft.AspNetCore.SignalR;
 #endif
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Jumoo.TranslationManager.OpenAi.Services;

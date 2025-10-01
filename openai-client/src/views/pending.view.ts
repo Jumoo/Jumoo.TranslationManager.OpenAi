@@ -23,7 +23,7 @@ export class TranslationOpenAiConnectorPendingElement
     return html`<jumoo-tm-ui-box headline="Settings">
       <div class="setting">
         <div class="title">Model</div>
-        <div class="value">${settings?.model ?? "text-davinci-003"}</div>
+        <div class="value">${settings?.model ?? "gpt-4o"}</div>
       </div>
       <div class="setting">
         <div class="title">Max Tokens</div>

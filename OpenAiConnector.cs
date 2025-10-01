@@ -102,7 +102,7 @@ public class OpenAiConnector : ITranslationProvider
                         var progress = (count / total) * 100;
                         await _messageService.SendUpdateAsync(
                             "Translating",
-                            $"{group.Name} - {property.Alias} [{progress}]", progress , string.Empty);
+                            $"{group.Name} - {property.Alias} [{progress:0.00}]", progress , string.Empty);
 
                         var result = await GetTranslatedValue(
                             property.Source, property.Target, sourceLang, targetLang);
@@ -349,18 +349,12 @@ public class OpenAiConnector : ITranslationProvider
                 _logger.LogDebug("Translating: {count} as one chunk", block.Count);
                 _logger.LogDebug("Chunks: {blocks}", string.Join("\r\n", block));
 
-                foreach (var b in block)
-                {
-                    _logger.LogDebug("Chunk {length}", b.Length);
-                }
-
                 var translationOptions = new OpenAITranslationOptions
                 {
                     SourceLanguage = sourceLang,
                     TargetLanguage = targetLang,
                     IsHtml = isHtml,
                     Model = _model,
-                    Prompt = _prompt,
                     SystemPrompt = _systemPrompt
                 };
 

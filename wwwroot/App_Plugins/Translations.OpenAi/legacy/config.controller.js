@@ -63,14 +63,21 @@
                 newValue.service = 'BetalgoOpenAiService';
             }
 
-            if (newValue.prompt === undefined || newValue.prompt.length == 0) {
-                console.log('empty prompt');
-                newValue.prompt = `Translate this {sourceLang} text into {targetLang}\r\n\r\n{text} `;
+            if (newValue.systemPrompt == undefined || newValue.systemPrompt.length == 0) {
+
+                if (newValue.prompt !== undefined && newValue.prompt.length > 0) {
+                    newValue.systemPrompt = prompt;
+                }
+                else {
+                    newValue.systemPrompt = "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}, if you can not translate something return the value you were given.";
+                }
             }
 
-            if (newValue.systemPrompt == undefined || newValue.systemPrompt.length == 0) {
-                newValue.systemPrompt = "You will be provided with sentences in {sourceLang}, and your task is to translate it into {targetLang}";
+            if (newValue.prompt === undefined || newValue.prompt.length == 0) {
+                console.log('empty prompt');
+                newValue.prompt = newValue.systemPrompt;
             }
+
         }
     }
 
