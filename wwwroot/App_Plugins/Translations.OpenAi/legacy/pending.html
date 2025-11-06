@@ -69,9 +69,12 @@
                     {{vm.settings.nucleusSamplingFactor}}
                 </div>
             </div>
-
         </umb-box-content>
     </umb-box>
+
+    <div class="alert alert-info" ng-if="vm.settings.backgroundSubmit == true">
+        <localize key="openAi_backgroundSubmit"></localize>    
+    </div>
 
     <div class="alert alert-warning">
         <localize key="@openAi_beta-warning"></localize>

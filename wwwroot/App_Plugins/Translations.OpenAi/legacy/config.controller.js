@@ -59,6 +59,10 @@
                 newValue.nucleusSamplingFactor = 1;
             }
 
+            if (newValue.backgroundSubmit === undefined) {
+                newValue.backgroundSubmit = false;
+            }
+
             if (newValue.service === undefined) {
                 newValue.service = 'BetalgoOpenAiService';
             }

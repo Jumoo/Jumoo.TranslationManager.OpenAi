@@ -82,5 +82,9 @@
 
 		<key alias="service">OpenAi Library</key>
 		<key alias="service-desc">Choose which API Library to use when sending translations</key>
+
+		<key alias="background">Background Submit</key>
+		<key alias="background-desc">Translation process runs in the background when job is submitted</key>
+		<key alias="backgroundSubmit">Job will be translated on a background thread. This process will complete immediately, but the Translation process will still be running in the background.</key>
 	</area>
 </language>

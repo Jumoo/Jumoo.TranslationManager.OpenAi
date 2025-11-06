@@ -44,6 +44,16 @@
                             </umb-toggle>
                         </umb-control-group>
 
+                        <umb-control-group label="@openAi_background" description="@openAi_background-desc">
+                            <umb-toggle checked="vm.settings.backgroundSubmit"
+                                        on-click="vm.settings.backgroundSubmit = !vm.settings.backgroundSubmit"
+                                        show-labels="true"
+                                        label-on="Translation jobs will be submitted on a background thread"
+                                        label-off="Jobs will be submitted inline and you can watch their progress."
+                                        label-position="right">
+                            </umb-toggle>
+                        </umb-control-group>
+
                     </div>
                 </umb-box-content>
             </umb-box>

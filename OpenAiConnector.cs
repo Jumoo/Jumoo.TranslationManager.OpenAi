@@ -4,10 +4,13 @@ using Jumoo.TranslationManager.Core;
 using Jumoo.TranslationManager.Core.Configuration;
 using Jumoo.TranslationManager.Core.Models;
 using Jumoo.TranslationManager.Core.Providers;
+using Jumoo.TranslationManager.Core.Services;
 using Jumoo.TranslationManager.OpenAi.Models;
 using Jumoo.TranslationManager.OpenAi.Services;
 
 using Microsoft.Extensions.Logging;
+
+using Org.BouncyCastle.Pkcs;
 
 using System;
 using System.Collections.Generic;
@@ -16,6 +19,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Umbraco.Cms.Core;
+
+
+#if NET9_0_OR_GREATER
+using Umbraco.Cms.Core.HostedServices;
+#else
+using Umbraco.Cms.Infrastructure.HostedServices;
+#endif
+
 using Umbraco.Extensions;
 
 namespace Jumoo.TranslationManager.OpenAi;
@@ -32,9 +43,12 @@ public class OpenAiConnector : ITranslationProvider
     private readonly TranslationConfigService _configService;
     private readonly ILogger<OpenAiConnector> _logger;
 
-    
     private readonly OpenAIServiceFactory _openAIServiceFactory;
     private IOpenAiTranslationService _openAiService;
+
+    private readonly IBackgroundTaskQueue _backgroundTaskQueue;
+    private readonly Lazy<TranslationJobService> _jobService;
+    private readonly Lazy<TranslationNodeService> _nodeService;
 
     public string Name => ConnectorName;
     public string Alias => ConnectorAlias;
@@ -48,12 +62,16 @@ public class OpenAiConnector : ITranslationProvider
     private string _model = OpenAIConstants.DefaultModel;
     private string _prompt = OpenAIConstants.DefaultPrompt;
     private string _systemPrompt = OpenAIConstants.DefaultSystemPrompt;
+    private bool _backgroundSubmit = false;
 
     public OpenAiConnector(
         TranslationConfigService configService,
         ILogger<OpenAiConnector> logger,
         OpenAIServiceFactory openAIServiceFactory,
-        OpenAIMessageService messageService)
+        OpenAIMessageService messageService,
+        IBackgroundTaskQueue backgroundTaskQueue,
+        Lazy<TranslationJobService> jobService,
+        Lazy<TranslationNodeService> nodeService)
     {
         // defaults. 
         _configService = configService;
@@ -61,6 +79,9 @@ public class OpenAiConnector : ITranslationProvider
         _openAIServiceFactory = openAIServiceFactory;
         Reload();
         _messageService = messageService;
+        _backgroundTaskQueue = backgroundTaskQueue;
+        _jobService = jobService;
+        _nodeService = nodeService;
     }
 
     public TranslationProviderViews Views => new TranslationProviderViews()
@@ -70,6 +91,38 @@ public class OpenAiConnector : ITranslationProvider
     };
 
     public async Task<Attempt<TranslationJob>> Submit(TranslationJob job)
+    {
+        if (_backgroundSubmit)
+            return await SubmitBackground(job);
+
+        return await SubmitInternal(job);
+    }
+
+    private async Task<Attempt<TranslationJob>> SubmitBackground(TranslationJob job)
+    {
+        _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
+        {
+            var result = await SubmitInternal(job);
+            var service = _jobService.Value;
+            var nodeService = _nodeService.Value;
+            if (service is null || nodeService is null) return;
+
+            foreach (var node in result.Result.Nodes)
+            {
+                node.Status = NodeStatus.Reviewing;
+                nodeService.Save(node, true);
+            }
+
+            var saveResult = service.Save(result.Result);
+            service.LoadJobNodes(saveResult);
+        });
+
+        job.Status = JobStatus.Submitted;
+        job.ProviderStatus = "Processing in background";
+        return Attempt.Succeed(job);
+    }
+
+    private async Task<Attempt<TranslationJob>> SubmitInternal(TranslationJob job)
     {
         if (!_openAiService.Enabled())
             throw new Exception("OpenAi is not configured");
@@ -82,7 +135,7 @@ public class OpenAiConnector : ITranslationProvider
             _logger.LogDebug("Submitting translations via OpenApi");
 
             int count = 0;
-            
+
             // guessing how many properties we have to do.
             decimal total = job.Nodes.SelectMany(x => x.Groups).Sum(x => x.Properties.Count);
 
@@ -102,7 +155,7 @@ public class OpenAiConnector : ITranslationProvider
                         var progress = (count / total) * 100;
                         await _messageService.SendUpdateAsync(
                             "Translating",
-                            $"{group.Name} - {property.Alias} [{progress:0.00}]", progress , string.Empty);
+                            $"{group.Name} - {property.Alias} [{progress:0.00}]", progress, string.Empty);
 
                         var result = await GetTranslatedValue(
                             property.Source, property.Target, sourceLang, targetLang);
@@ -124,7 +177,7 @@ public class OpenAiConnector : ITranslationProvider
             job.ProviderStatus = "Translated via OpenAI";
             return Attempt.Succeed(job);
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
             _logger.LogError(exception, "Error submitting job via openAI connector.");
             return Attempt<TranslationJob>.Fail(exception);
@@ -137,7 +190,7 @@ public class OpenAiConnector : ITranslationProvider
 
         if (source.HasChildValues())
         {
-            foreach(var innerValue in source.InnerValues) 
+            foreach (var innerValue in source.InnerValues)
             {
                 _logger.LogDebug("GetTranslatedValue: Child : {key}", innerValue.Key);
 
@@ -177,6 +230,11 @@ public class OpenAiConnector : ITranslationProvider
                 target.Value = await TranslateStringValue(source.Value, sourceLang, targetLang);
                 target.Translated = true;
             }
+        }
+        else
+        {
+            target.Value = source.Value;
+            target.Translated = true;
         }
 
         return target;
@@ -392,6 +450,8 @@ public class OpenAiConnector : ITranslationProvider
         _asHtml = _configService.GetProviderSetting(this.Alias, "asHtml", false);
 
         _aiServiceName = _configService.GetProviderSetting(Alias, "service", nameof(BetalgoOpenAiService));
+
+        _backgroundSubmit = _configService.GetProviderSetting(this.Alias, "backgroundSubmit", false);
 
         _openAiService = _openAIServiceFactory.GetActiveService();
     }
