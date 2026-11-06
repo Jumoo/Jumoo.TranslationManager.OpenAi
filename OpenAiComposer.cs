@@ -7,7 +7,7 @@ using Jumoo.TranslationManager.Core.Models;
 #if UMB_15_OR_GREATER
 using Umbraco.Cms.Infrastructure.Manifest;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 #else
 using Jumoo.TranslationManager.OpenAi.Controllers;
 #endif
