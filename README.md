@@ -1,6 +1,11 @@
 # Jumoo.TranslationManager.OpenAi
 Connector for Translation Manager using OpenAi
 
+> [!IMPORTANT]
+> **This package is not supported on Umbraco v17.**
+>
+> For Umbraco v17 and later, use [Jumoo.TranslationManager.AI](https://www.nuget.org/packages/Jumoo.TranslationManager.AI). It is the main AI package for Translation Manager and has all the new features: translation memory, glossary support and batch submission.
+
 > This connector used the `Azure.AI.OpenAi` library so in theory we can also use the Azure OpenAi server (but at the moment we haven't wired up the endpoint code.
 
 # OpenAi Translations in Umbraco ! 
